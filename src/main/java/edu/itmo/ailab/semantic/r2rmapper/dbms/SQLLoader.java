@@ -5,10 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.ResultSetMetaData;
 
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
+import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 
 import org.apache.log4j.Logger;
 
@@ -97,8 +100,8 @@ public class SQLLoader {
 		
 	}
 	
-	public void loadModelFromDB(String query)
-			throws SQLException {
+	public void loadModelFromDB(String query, RDFModelGenerator model)
+			throws SQLException, R2RMapperException {
 		Statement statement;
 		ResultSet resultSet;
 		ResultSetMetaData resultSetMetaData;
@@ -114,15 +117,18 @@ public class SQLLoader {
 			resultSetMetaData = (ResultSetMetaData) resultSet.getMetaData();
 			numColumns = resultSetMetaData.getColumnCount();
 			while (resultSet.next()) {
-				System.out.println("Row PK: " + resultSet.getString("id"));
+				//System.out.println("Row PK: " + resultSet.getString("id"));
+				Resource r = model.newInstance( resultSet.getString("id"), resultSetMetaData.getTableName(1));
+				
 				for (int col = 1; col <= numColumns; ++col) {
-					System.out.println("Column [" + col + "]:" + resultSetMetaData.getColumnName(col)
-							+ " Value: " + resultSet.getString(col));	
+					/*System.out.println("Column [" + col + "]:" + resultSetMetaData.getColumnName(col)
+							+ " Value: " + resultSet.getString(col));*/
+					model.addStatement(r, resultSetMetaData.getColumnName(col), resultSet.getString(col));
 					
 				}
 			}
 			
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			
 		}finally {
