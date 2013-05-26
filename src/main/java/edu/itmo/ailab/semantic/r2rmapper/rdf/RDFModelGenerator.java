@@ -1,6 +1,7 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
 import org.apache.log4j.Logger;
+import org.apache.xml.serialize.BaseMarkupSerializer;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -28,6 +29,8 @@ public class RDFModelGenerator{
 	
 	protected String d2rqNamespace = "http://d2rq.org/terms/d2rq#";
 		
+	protected String rrNamespace = "http://www.w3.org/ns/r2rml#";
+	
 	public String defaultPrefix = "r2r";
 	
 	
@@ -57,6 +60,7 @@ public class RDFModelGenerator{
 			ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);		
 			ontModel.setNsPrefix( defaultPrefix, baseNamespace );
 			ontModel.setNsPrefix( "d2rq", d2rqNamespace );
+			ontModel.setNsPrefix( "rr", rrNamespace );
 			return ontModel;
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF model creation failed", ex);
@@ -117,6 +121,36 @@ public class RDFModelGenerator{
 			throw new R2RMapperException("new RDF statement initializing failed", ex);
 		}
 
+
+	}
+	
+	public void addTripple(String subj, String table) 
+			throws R2RMapperException {
+		
+		try{		
+			
+			Resource resource = ontModel.createResource(defaultPrefix + ":TrippleMap_" + subj);	
+			resource.addProperty(RDF.type, ontModel
+											.createResource( rrNamespace + "TriplesMap"));
+			
+			Property logicalTableProperty = ontModel.createProperty(rrNamespace + "LogicalTable");
+			Property tableNameProperty = ontModel.createProperty(rrNamespace + "tableName");
+			
+			resource.addProperty(logicalTableProperty, ontModel
+												.createResource()
+												.addProperty(tableNameProperty,table));
+			
+			Property subjectMapProperty = ontModel.createProperty(rrNamespace + "subjectMap");
+			Property templateProperty = ontModel.createProperty(rrNamespace + "template");
+			resource.addProperty(subjectMapProperty,ontModel
+													.createResource()
+													.addProperty(templateProperty, "http://localhost/" + table + "/" + subj));
+			
+			
+		}catch(Exception ex){
+			throw new R2RMapperException("new RDF instance initializing failed", ex);
+		}
+		
 
 	}
 

@@ -42,11 +42,12 @@ public class R2RMapper {
 		c.connect();
 		RDFModelGenerator m = new RDFModelGenerator("localhost","r2r");
 		m.createModel();
-		m.newClassMapInstance(table);
-		c.loadModelFromDB("SELECT * from " + table + ";", m);
-		m.newClassMapInstance(table2);
-		c.connect();
-		c.loadModelFromDB("SELECT * from " + table2 + ";", m);
+		//m.newClassMapInstance(table);
+		m.addTripple("123", "456");
+		//c.loadModelFromDB("SELECT * from " + table + ";", m);
+		//m.newClassMapInstance(table2);
+		//c.connect();
+		//c.loadModelFromDB("SELECT * from " + table2 + ";", m);
 		
 		
 		m.showModel("TURTLE");
