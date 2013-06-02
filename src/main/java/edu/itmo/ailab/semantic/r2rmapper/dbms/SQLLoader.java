@@ -117,14 +117,9 @@ public class SQLLoader {
 			resultSetMetaData = (ResultSetMetaData) resultSet.getMetaData();
 			numColumns = resultSetMetaData.getColumnCount();
 			while (resultSet.next()) {
-				//System.out.println("Row PK: " + resultSet.getString("id"));
 				Resource r = model.newInstance( resultSet.getString("id"), resultSetMetaData.getTableName(1));
-				
 				for (int col = 1; col <= numColumns; ++col) {
-					/*System.out.println("Column [" + col + "]:" + resultSetMetaData.getColumnName(col)
-							+ " Value: " + resultSet.getString(col));*/
-					model.addStatement(r, resultSetMetaData.getColumnName(col), resultSet.getString(col));
-					
+					model.addStatement(r, resultSetMetaData.getColumnName(col), resultSet.getString(col));	
 				}
 			}
 			

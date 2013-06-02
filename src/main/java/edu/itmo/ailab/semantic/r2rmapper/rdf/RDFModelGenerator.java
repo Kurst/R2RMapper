@@ -27,11 +27,11 @@ public class RDFModelGenerator{
 	
 	public String baseNamespace = "http://localhost/";
 	
-	protected String d2rqNamespace = "http://d2rq.org/terms/d2rq#";
+	//protected String d2rqNamespace = "http://d2rq.org/terms/d2rq#";
 		
-	protected String rrNamespace = "http://www.w3.org/ns/r2rml#";
+	//protected String rrNamespace = "http://www.w3.org/ns/r2rml#";
 	
-	public String defaultPrefix = "r2r";
+	public String defaultPrefix;
 	
 	
 	public RDFModelGenerator(String modelName, String prefix){
@@ -41,6 +41,14 @@ public class RDFModelGenerator{
 		this.baseNamespace = baseNamespace + prefix + "#";
 	}
 	
+	public OntModel getOntModel() {
+		return ontModel;
+	}
+
+
+	public void setOntModel(OntModel ontModel) {
+		this.ontModel = ontModel;
+	}
 	
 	public String getDefaultNamespace() {
 		return baseNamespace;
@@ -59,8 +67,8 @@ public class RDFModelGenerator{
 			
 			ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);		
 			ontModel.setNsPrefix( defaultPrefix, baseNamespace );
-			ontModel.setNsPrefix( "d2rq", d2rqNamespace );
-			ontModel.setNsPrefix( "rr", rrNamespace );
+			//ontModel.setNsPrefix( "d2rq", d2rqNamespace );
+			//ontModel.setNsPrefix( "rr", rrNamespace );
 			return ontModel;
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF model creation failed", ex);
@@ -68,16 +76,15 @@ public class RDFModelGenerator{
 	}
 	
 	
-	public void newClassMapInstance(String table) 
+	public void newTableInstance(String table) 
 			throws R2RMapperException {
-
 		try{	
 			Resource resource;
 			Resource object;
 			
 			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + table);
 			resource = ontModel.createResource(defaultPrefix + ":TBL_" + table);
-			object = ontModel.createResource( d2rqNamespace + "ClassMap");
+			object = ontModel.createResource( "rdfs:Class");
 			resource.addProperty(RDF.type, object);
 			resource.addProperty(RDFS.label, table);
 
@@ -107,7 +114,7 @@ public class RDFModelGenerator{
 		
 		
 	}
-
+	
 	public void addStatement(Resource resource, String predicate, String obj) 
 			throws R2RMapperException {
 	
@@ -123,8 +130,8 @@ public class RDFModelGenerator{
 
 
 	}
-	
-	public void addTripple(String subj, String table) 
+	//not needed for now
+	/*public void addTripple(String subj, String table) 
 			throws R2RMapperException {
 		
 		try{		
@@ -152,30 +159,15 @@ public class RDFModelGenerator{
 		}
 		
 
-	}
+	}*/
 
 	public void createURI(String value) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void showModel(String format){
 
-		RDFWriter rdfWriter = ontModel.getWriter(format);
-		
-		rdfWriter.setProperty("width", String.valueOf(Integer.MAX_VALUE));
-		rdfWriter.write(ontModel, System.out, null);
-		System.out.println("\n");
-		
-	}
 	
-	public void showModel() {
-		ontModel.write(System.out);
-	}
-	public void storeModel() {
-		// TODO Auto-generated method stub
-
-	}
 	
 
 }
