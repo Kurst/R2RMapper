@@ -1,6 +1,7 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -25,6 +26,11 @@ public class BasicMapper {
 	private RDFModelGenerator model;
 	
 	public BasicMapper(){
+		
+		
+	}
+	
+	public BasicMapper(List<Object> properties){
 		
 		
 	}

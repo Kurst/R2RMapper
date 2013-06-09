@@ -9,6 +9,7 @@ package edu.itmo.ailab.semantic.r2rmapper.main;
  *
  */
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
@@ -32,12 +33,13 @@ public class R2RMapper {
 	 * @throws SQLException 
 	 * @throws InstantiationException 
 	 * @throws R2RMapperException 
+	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args)
 			throws SQLException, IllegalAccessException, 
-			ClassNotFoundException, InstantiationException, R2RMapperException {
+			ClassNotFoundException, InstantiationException, R2RMapperException, FileNotFoundException {
 				
-		BasicMapper bm = new BasicMapper();
+		/*BasicMapper bm = new BasicMapper();
 		bm.setJdbcUrl("jdbc:mysql://localhost/r2rmapper");
 		bm.setDbUser("root");
 		bm.setDbPassword("");
@@ -46,7 +48,11 @@ public class R2RMapper {
 		bm.setTableName("test");
 		bm.setSqlStatement("SELECT * from " + bm.getTableName() + ";");
 		bm.startExtraction();
-		bm.printModel("TURTLE");
+		bm.printModel("TURTLE");*/
+		
+		PropertyLoader loader = new PropertyLoader("src/main/resources/test.yaml");
+		BasicMapper bm2 = new BasicMapper(loader.properties);
+		
 
 	}
 
