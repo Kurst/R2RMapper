@@ -1,13 +1,11 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
 import org.apache.log4j.Logger;
-import org.apache.xml.serialize.BaseMarkupSerializer;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -27,11 +25,10 @@ public class RDFModelGenerator{
 	
 	public String baseNamespace = "http://localhost/";
 	
-	//protected String d2rqNamespace = "http://d2rq.org/terms/d2rq#";
-		
-	//protected String rrNamespace = "http://www.w3.org/ns/r2rml#";
+	public String systemNamespace = "";
 	
-	public String defaultPrefix = "";
+	
+	public String prefix = "";
 	
 	
 	public RDFModelGenerator(){
@@ -41,7 +38,7 @@ public class RDFModelGenerator{
 	public RDFModelGenerator(String modelName, String prefix){
 		
 		this.modelName = modelName;
-		this.defaultPrefix = prefix;
+		this.prefix = prefix;
 		this.baseNamespace = baseNamespace + prefix + "#";
 	}
 	
@@ -54,30 +51,57 @@ public class RDFModelGenerator{
 		this.ontModel = ontModel;
 	}
 	
-	public String getDefaultNamespace() {
+	public String getBaseNamespace() {
 		return baseNamespace;
 	}
 
-	public void setDefaultNamespace(String baseNamespace) {
+	public void setBaseNamespace(String baseNamespace) {
 		this.baseNamespace = baseNamespace;
 	}
 	
+	public void setSystemNamespace(String ns) {
+		this.systemNamespace = ns;
+	}
+	
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+	
+	/**
+	 * Create ontology model 
+	 * 
+	 * @return
+	 * @throws R2RMapperException
+	 */
 	public OntModel createModel() 
 			throws R2RMapperException {	
 		try{
 			LOGGER.info("[RDF Model Generator] Creating new RDF model: " + modelName);		
-			
 			ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);		
-			ontModel.setNsPrefix( defaultPrefix, baseNamespace );
-			//ontModel.setNsPrefix( "d2rq", d2rqNamespace );
-			//ontModel.setNsPrefix( "rr", rrNamespace );
 			return ontModel;
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF model creation failed", ex);
 		}
 	}
 	
+	/**
+	 * Add namespace prefix into RDF model
+	 * @param nsPrefix
+	 */
+	public void addNsPrefix(String nsPrefix) {
+		ontModel.setNsPrefix( prefix, systemNamespace );
+	}
 	
+	/**
+	 * Add new instance with table name to the RDF model. With name TBL_
+	 * 
+	 * @param table
+	 * @throws R2RMapperException
+	 */
 	public void newTableInstance(String table) 
 			throws R2RMapperException {
 		try{	
@@ -85,7 +109,7 @@ public class RDFModelGenerator{
 			Resource object;
 			
 			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + table);
-			resource = ontModel.createResource(defaultPrefix + ":TBL_" + table);
+			resource = ontModel.createResource(prefix + ":TBL_" + table);
 			object = ontModel.createResource( "rdfs:Class");
 			resource.addProperty(RDF.type, object);
 			resource.addProperty(RDFS.label, table);
@@ -97,6 +121,14 @@ public class RDFModelGenerator{
 		
 	}
 	
+	/**
+	 * Add new instace to RDF model based on primary key in db. PK_
+	 * 
+	 * @param subj
+	 * @param table
+	 * @return
+	 * @throws R2RMapperException
+	 */
 	public Resource newInstance(String subj, String table) 
 			throws R2RMapperException {
 
@@ -105,8 +137,8 @@ public class RDFModelGenerator{
 			Resource object;
 						
 			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + subj);
-			resource = ontModel.createResource(defaultPrefix + ":"+table+"_PK_" + subj);
-			object = ontModel.createResource( baseNamespace + "TBL_" + table);
+			resource = ontModel.createResource(prefix + ":"+table+"_PK_" + subj);
+			object = ontModel.createResource( systemNamespace + "TBL_" + table);
 			resource.addProperty(RDFS.subClassOf, object);
 			
 			return resource;
@@ -117,13 +149,21 @@ public class RDFModelGenerator{
 		
 	}
 	
+	/**
+	 * Add a statement into RDF model
+	 * 
+	 * @param resource
+	 * @param predicate
+	 * @param obj
+	 * @throws R2RMapperException
+	 */
 	public void addStatement(Resource resource, String predicate, String obj) 
 			throws R2RMapperException {
 	
 		try{	
 			LOGGER.info("[RDF Model Generator] Add subject as new statement: " + obj);
 			Property property;	
-			property = ontModel.createProperty(baseNamespace + predicate);
+			property = ontModel.createProperty(systemNamespace + predicate);
 			ontModel.add(resource, property, obj);
 
 		}catch(Exception ex){
@@ -132,13 +172,14 @@ public class RDFModelGenerator{
 
 
 	}
-	//not needed for now
-	/*public void addTripple(String subj, String table) 
+	
+	/*@Deprecated
+	public void addTripple(String subj, String table) 
 			throws R2RMapperException {
 		
 		try{		
 			
-			Resource resource = ontModel.createResource(defaultPrefix + ":TrippleMap_" + subj);	
+			Resource resource = ontModel.createResource(prefix + ":TrippleMap_" + subj);	
 			resource.addProperty(RDF.type, ontModel
 											.createResource( rrNamespace + "TriplesMap"));
 			
@@ -160,11 +201,10 @@ public class RDFModelGenerator{
 			throw new R2RMapperException("new RDF instance initializing failed", ex);
 		}
 		
-
 	}*/
 
 	public void createURI(String value) {
-		// TODO Auto-generated method stub
+		// TODO Create safe URI
 
 	}
 

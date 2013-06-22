@@ -1,6 +1,6 @@
 ---
 Name: System 1
-Url: localhost
+Url: http://localhost/
 Prefix: sys1
 Database:
     JdbcUrl: jdbc:mysql://localhost/r2r
@@ -11,7 +11,7 @@ Database:
     TableName: test
 ---
 Name: System 2
-Url: localhost
+Url: http://localhost/
 Prefix: sys2
 Database:
     JdbcUrl: jdbc:mysql://localhost/r2r

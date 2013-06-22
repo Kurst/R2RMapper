@@ -27,7 +27,7 @@ public class BasicMapper {
 	private String dbUser;
 	private String dbPassword;
 	private Driver jdbcDriver; 
-	private RDFModelGenerator model;
+	private RDFModelGenerator model = new RDFModelGenerator();
 	private List<Object> properties = new ArrayList<Object>();
 	
 	public BasicMapper(){
@@ -44,11 +44,9 @@ public class BasicMapper {
 	}
 
 
-
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
-
 
 
 	public String getPrefix() {
@@ -56,11 +54,9 @@ public class BasicMapper {
 	}
 
 
-
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-
 
 
 	public String getSqlStatement() {
@@ -68,11 +64,9 @@ public class BasicMapper {
 	}
 
 
-
 	public void setSqlStatement(String sqlStatement) {
 		this.sqlStatement = sqlStatement;
 	}
-
 
 
 	public String getJdbcUrl() {
@@ -80,17 +74,14 @@ public class BasicMapper {
 	}
 
 
-
 	public void setJdbcUrl(String jdbcUrl) {
 		this.jdbcUrl = jdbcUrl;
 	}
 
 
-
 	public String getDbUser() {
 		return dbUser;
 	}
-
 
 
 	public void setDbUser(String dbUser) {
@@ -125,7 +116,17 @@ public class BasicMapper {
 		this.properties = properties;
 	}
 
-	public void startExtraction() 
+	/**
+	 * Extract data into new model.
+	 * 
+	 * @throws R2RMapperException
+	 * @throws SQLException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 */
+	@Deprecated
+	public void startSingleExtraction() 
 			throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
 		if(tableName == null || prefix == null || sqlStatement == null 
 				|| jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null){
@@ -142,7 +143,17 @@ public class BasicMapper {
 		}
 	}
 	
-	public void startExtraction2(Map <PropertyType, String> property) 
+	/**
+	 * Method extracts data from DBMS into RDF model, based on properties from yaml file.
+	 * 
+	 * @param property
+	 * @throws R2RMapperException
+	 * @throws SQLException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 */
+	public void startExtraction(Map <PropertyType, String> property) 
 			throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
 		
 		String name = property.get(PropertyType.NAME);
@@ -162,8 +173,10 @@ public class BasicMapper {
 			LOGGER.info("[R2R Mapper] Extracting data from RDB for " + name);		
 			SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
 			con.connect();
-			model = new RDFModelGenerator(name, prefix);
-			model.createModel();
+			model.setPrefix(prefix);
+			model.setBaseNamespace(url);
+			model.setSystemNamespace(model.getBaseNamespace() + prefix + "#");
+			model.addNsPrefix(prefix);
 			model.newTableInstance(tableName);
 			con.loadModelFromDB(sqlStatement, model);
 			
@@ -171,6 +184,10 @@ public class BasicMapper {
 		
 	}
 	
+	/**
+	 * Prints RDF model in console
+	 * @param format
+	 */
 	public void printModel(String format){
 		OntModel ontModel = model.getOntModel();
 		RDFWriter rdfWriter = ontModel.getWriter(format);
@@ -179,17 +196,34 @@ public class BasicMapper {
 		System.out.println("\n");
 	}
 	
+	/**
+	 * Creates new RDF model object
+	 * 
+	 * @throws R2RMapperException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	public void createMap() 
 			throws R2RMapperException, InstantiationException, 
 			IllegalAccessException, ClassNotFoundException, SQLException{
 		
+		model.createModel();
 		for (Object data : this.properties) {
-			startExtraction2(this.parseProperty(data));	
-			this.printModel("TURTLE");
+			startExtraction(this.parseProperty(data));		
 	    }
+		this.printModel("TURTLE");
 
 	}
 	
+	/**
+	 * Parse properties from Object.
+	 * 
+	 * @param prop
+	 * @return
+	 * @throws R2RMapperException
+	 */
 	@SuppressWarnings("rawtypes")
 	public Map <PropertyType, String> parseProperty(Object prop) 
 			throws R2RMapperException{
