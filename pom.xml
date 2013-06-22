@@ -27,6 +27,11 @@
     	<groupId>org.yaml</groupId>
     	<artifactId>snakeyaml</artifactId>
     	<version>1.12</version>
-	</dependency>         
+	</dependency>    
+	<dependency>
+		<groupId>com.beust</groupId>
+		<artifactId>jcommander</artifactId>
+		<version>1.30</version>
+	</dependency>             
   </dependencies>
 </project>

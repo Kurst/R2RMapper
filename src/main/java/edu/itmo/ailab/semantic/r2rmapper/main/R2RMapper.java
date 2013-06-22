@@ -11,6 +11,9 @@ package edu.itmo.ailab.semantic.r2rmapper.main;
 
 import org.apache.log4j.Logger;
 
+import com.beust.jcommander.JCommander;
+
+
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
@@ -20,6 +23,8 @@ import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
 public class R2RMapper {
 	
 	public static final Logger LOGGER=Logger.getLogger(R2RMapper.class);
+	
+
 	/**
 	 * Main run method.
 	 * 
@@ -28,23 +33,14 @@ public class R2RMapper {
 	 */
 	public static void main(String[] args)
 			throws Exception {
-				
-		/*BasicMapper bm = new BasicMapper();
-		bm.setJdbcUrl("jdbc:mysql://localhost/r2r");
-		bm.setDbUser("root");
-		bm.setDbPassword("");
-		bm.setJdbcDriver(Driver.MysqlDriver);
-		bm.setPrefix("cde");
-		bm.setTableName("test");
-		bm.setSqlStatement("SELECT * from " + bm.getTableName() + ";");
-		bm.startExtraction();
-		bm.printModel("TURTLE");*/
-		
-		PropertyLoader loader = new PropertyLoader("src/main/resources/config.yaml");
+					
+		CommandLine cls = new CommandLine();
+		new JCommander(cls, args);
+
+		PropertyLoader loader = new PropertyLoader(cls.config);
 		BasicMapper bm2 = new BasicMapper(loader.properties);
 		bm2.createMap();
-		bm2.printModel("TURTLE");
-		
+		bm2.printModel("TURTLE");	
 
 	}
 
