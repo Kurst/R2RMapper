@@ -1,0 +1,22 @@
+---
+Name: System 1
+Url: localhost
+Prefix: sys1
+Database:
+    JdbcUrl: jdbc:mysql://localhost/r2r
+    Username: root
+    Password: 
+    Type: mysql
+    Query: SELECT * FROM test;
+    TableName: test
+---
+Name: System 2
+Url: localhost
+Prefix: sys2
+Database:
+    JdbcUrl: jdbc:mysql://localhost/r2r
+    Username: root
+    Password: 
+    Type: mysql
+    Query: SELECT * FROM test;
+    TableName: test   

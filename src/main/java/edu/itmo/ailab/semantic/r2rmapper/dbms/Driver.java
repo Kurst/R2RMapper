@@ -15,4 +15,17 @@ public class Driver {
     public String getDriverName() {
     	return driverName;
     }
+    
+
+	public static Driver getDriverByType(String type) {
+    	switch (type) {
+		case "mysql":
+			return MysqlDriver;
+		case "postgress":
+			return PostgreSQLDriver;
+		default:
+			return MysqlDriver;
+		}
+
+    }
 }

@@ -23,7 +23,7 @@ public class RDFModelGenerator{
 	
 	private OntModel ontModel;
 	
-	private String modelName;
+	private String modelName = "";
 	
 	public String baseNamespace = "http://localhost/";
 	
@@ -31,9 +31,13 @@ public class RDFModelGenerator{
 		
 	//protected String rrNamespace = "http://www.w3.org/ns/r2rml#";
 	
-	public String defaultPrefix;
+	public String defaultPrefix = "";
 	
 	
+	public RDFModelGenerator(){
+
+	}
+
 	public RDFModelGenerator(String modelName, String prefix){
 		
 		this.modelName = modelName;
@@ -59,9 +63,7 @@ public class RDFModelGenerator{
 	}
 	
 	public OntModel createModel() 
-			throws R2RMapperException {
-
-		
+			throws R2RMapperException {	
 		try{
 			LOGGER.info("[RDF Model Generator] Creating new RDF model: " + modelName);		
 			

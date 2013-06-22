@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.Driver;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.SQLLoader;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
+import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 
@@ -28,19 +29,13 @@ public class R2RMapper {
 	public static final Logger LOGGER=Logger.getLogger(R2RMapper.class);
 	/**
 	 * @param args
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws SQLException 
-	 * @throws InstantiationException 
 	 * @throws R2RMapperException 
-	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args)
-			throws SQLException, IllegalAccessException, 
-			ClassNotFoundException, InstantiationException, R2RMapperException, FileNotFoundException {
+			throws Exception {
 				
 		/*BasicMapper bm = new BasicMapper();
-		bm.setJdbcUrl("jdbc:mysql://localhost/r2rmapper");
+		bm.setJdbcUrl("jdbc:mysql://localhost/r2r");
 		bm.setDbUser("root");
 		bm.setDbPassword("");
 		bm.setJdbcDriver(Driver.MysqlDriver);
@@ -50,8 +45,9 @@ public class R2RMapper {
 		bm.startExtraction();
 		bm.printModel("TURTLE");*/
 		
-		PropertyLoader loader = new PropertyLoader("src/main/resources/test.yaml");
+		PropertyLoader loader = new PropertyLoader("src/main/resources/config.yaml");
 		BasicMapper bm2 = new BasicMapper(loader.properties);
+		bm2.createMap();
 		
 
 	}
