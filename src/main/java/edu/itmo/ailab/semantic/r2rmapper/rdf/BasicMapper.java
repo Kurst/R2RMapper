@@ -213,8 +213,6 @@ public class BasicMapper {
 		for (Object data : this.properties) {
 			startExtraction(this.parseProperty(data));		
 	    }
-		this.printModel("TURTLE");
-
 	}
 	
 	/**

@@ -43,6 +43,7 @@ public class R2RMapper {
 		PropertyLoader loader = new PropertyLoader("src/main/resources/config.yaml");
 		BasicMapper bm2 = new BasicMapper(loader.properties);
 		bm2.createMap();
+		bm2.printModel("TURTLE");
 		
 
 	}
