@@ -313,6 +313,15 @@ public class BasicMapper {
 		
 	}
 	
+	/**
+	 * Transform file encoding
+	 * 
+	 * @param source
+	 * @param srcEncoding
+	 * @param target
+	 * @param tgtEncoding
+	 * @throws IOException
+	 */
 	public static void transformToUTF8(File source, String srcEncoding, File target, String tgtEncoding) 
 			throws IOException {
 	    BufferedReader br = null;
