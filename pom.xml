@@ -8,10 +8,23 @@
 
 	<properties>
 		<jdk.version>1.7</jdk.version>
+		<project.bin>${project.basedir}/bin</project.bin>
 	</properties>
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<followSymLinks>false</followSymLinks>
+					<filesets>
+						<fileset>
+							<directory>${project.bin}</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -32,6 +45,9 @@
 					</execution>
 				</executions>
 				<configuration>
+					<appendAssemblyId>false</appendAssemblyId>
+					<finalName>R2RMapper</finalName>
+					<outputDirectory>${project.bin}</outputDirectory>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
@@ -42,6 +58,30 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.bin}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/main/resources</directory>
+									<includes>
+										<include> **/*.yaml</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

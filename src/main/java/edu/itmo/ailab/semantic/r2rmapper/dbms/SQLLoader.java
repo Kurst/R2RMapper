@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -88,7 +89,11 @@ public class SQLLoader {
 		
 		try {
 			LOGGER.info("[SQL Loader] Establishing connection to database with: " + jdbcURL);
-			conn = (Connection) DriverManager.getConnection(jdbcURL, username, password);
+			Properties connInfo = new Properties();
+			connInfo.put("user", username);
+			connInfo.put("password", password);
+			connInfo.put("useUnicode","true");
+			conn = (Connection) DriverManager.getConnection(jdbcURL, connInfo);
 			LOGGER.info("[SQL Loader] Database connection established.");
 		} catch (SQLException ex) {
 			throw new SQLException(
