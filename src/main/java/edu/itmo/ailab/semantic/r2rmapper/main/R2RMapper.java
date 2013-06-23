@@ -40,7 +40,8 @@ public class R2RMapper {
 		PropertyLoader loader = new PropertyLoader(cls.config);
 		BasicMapper bm2 = new BasicMapper(loader.properties);
 		bm2.createMap();
-		bm2.printModel("TURTLE");	
+		bm2.printModelToFile("TURTLE","output.rdf");	
+		
 
 	}
 

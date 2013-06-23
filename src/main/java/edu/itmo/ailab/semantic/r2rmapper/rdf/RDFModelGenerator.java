@@ -1,5 +1,12 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+
+import java.lang.*;
+
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -160,7 +167,7 @@ public class RDFModelGenerator{
 	public void addStatement(Resource resource, String predicate, String obj) 
 			throws R2RMapperException {
 	
-		try{	
+		try{
 			LOGGER.info("[RDF Model Generator] Add subject as new statement: " + obj);
 			Property property;	
 			property = ontModel.createProperty(systemNamespace + predicate);

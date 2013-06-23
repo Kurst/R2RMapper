@@ -1,5 +1,6 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
+import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -187,13 +188,37 @@ public class BasicMapper {
 	/**
 	 * Prints RDF model in console
 	 * @param format
+	 * @throws FileNotFoundException 
 	 */
 	public void printModel(String format){
+		
+		LOGGER.info("[R2R Mapper] Printing output into console");
+		
 		OntModel ontModel = model.getOntModel();
 		RDFWriter rdfWriter = ontModel.getWriter(format);
 		rdfWriter.setProperty("width", String.valueOf(Integer.MAX_VALUE));
 		rdfWriter.write(ontModel, System.out, null);
 		System.out.println("\n");
+	}
+	
+	/**
+	 * Prints RDF model in file
+	 * @param format
+	 * @throws IOException 
+	 */
+	public void printModelToFile(String format, String filename) throws IOException{
+		
+		LOGGER.info("[R2R Mapper] Printing output into file: output/" + filename);
+		
+		new File("output").mkdirs();
+		File file = new File("output/" + filename);
+		
+		OntModel ontModel = model.getOntModel();
+		RDFWriter rdfWriter = ontModel.getWriter(format);
+		rdfWriter.setProperty("width", String.valueOf(Integer.MAX_VALUE));
+		rdfWriter.write(ontModel, new FileOutputStream(file), null);
+		System.out.println("\n");
+		//transformToUTF8(new File("output/" + filename), "UTF-8", new File("output/" + "ut8_" + filename), "ascii");		
 	}
 	
 	/**
@@ -286,6 +311,28 @@ public class BasicMapper {
 		
 		return property;	
 		
+	}
+	
+	public static void transformToUTF8(File source, String srcEncoding, File target, String tgtEncoding) 
+			throws IOException {
+	    BufferedReader br = null;
+	    BufferedWriter bw = null;
+	    try{
+	        br = new BufferedReader(new InputStreamReader(new FileInputStream(source),srcEncoding));
+	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target), tgtEncoding));
+	        char[] buffer = new char[16384];
+	        int read;
+	        while ((read = br.read(buffer)) != -1)
+	            bw.write(buffer, 0, read);
+	    } finally {
+	        try {
+	            if (br != null)
+	                br.close();
+	        } finally {
+	            if (bw != null)
+	                bw.close();
+	        }
+	    }
 	}
 
 	
