@@ -2,18 +2,22 @@ package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
 import java.lang.*;
 
 import org.apache.log4j.Logger;
+import org.mindswap.pellet.jena.PelletReasonerFactory;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -33,8 +37,7 @@ public class RDFModelGenerator{
 	public String baseNamespace = "http://localhost/";
 	
 	public String systemNamespace = "";
-	
-	
+		
 	public String prefix = "";
 	
 	
@@ -84,11 +87,19 @@ public class RDFModelGenerator{
 	 * @return
 	 * @throws R2RMapperException
 	 */
-	public OntModel createModel() 
+	public OntModel createModel(Integer reasoningLevel) 
 			throws R2RMapperException {	
 		try{
-			LOGGER.info("[RDF Model Generator] Creating new RDF model: " + modelName);		
-			ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);		
+			LOGGER.info("[RDF Model Generator] Creating new RDF model: " + modelName);
+			
+			if(reasoningLevel == 0){
+				ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);	
+			}else if (reasoningLevel == 1) { // OWL
+				Reasoner reasoner = PelletReasonerFactory.theInstance().create();
+				Model infModel = ModelFactory.createInfModel(reasoner, ModelFactory.createDefaultModel());
+				ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, infModel);
+			}
+				
 			return ontModel;
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF model creation failed", ex);
@@ -145,9 +156,12 @@ public class RDFModelGenerator{
 			
 			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + subj);
 			resource = ontModel.createResource(prefix + ":"+table+"_PK_" + subj);
-			object = ontModel.createResource( systemNamespace + "TBL_" + table);
-			resource.addProperty(RDFS.subClassOf, object);
-			
+			//object = ontModel.createResource( systemNamespace + "TBL" + table);
+			//resource.addProperty(RDFS.subClassOf, object);
+			Property property = ontModel.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+			object = ontModel.createResource("sak:Import");
+			ontModel.add(resource, property, object);
+			//TODO:Fix this
 			return resource;
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF instance initializing failed", ex);
@@ -218,6 +232,28 @@ public class RDFModelGenerator{
 
 	public void createURI(String value) {
 		// TODO Create safe URI
+
+	}
+	
+	public OntModel loadOwlModel(OntModel model) {
+		FileInputStream inputStream = null;
+
+		try {
+			inputStream = new FileInputStream("ontology.owl");
+			model.read(inputStream, null, "TURTLE");
+		} catch (Throwable throwable) {
+			System.err.println("Error reading file: "
+					+ throwable.getClass().getName() + throwable.getMessage());
+		} finally {
+			try {
+				inputStream.close();
+			} catch (Throwable throwable) {
+				System.err.println("Error closing input file");
+				throwable.printStackTrace();
+				System.exit(4);
+			}
+		}
+		return model;
 
 	}
 

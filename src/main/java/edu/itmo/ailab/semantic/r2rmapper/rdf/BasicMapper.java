@@ -147,7 +147,7 @@ public class BasicMapper {
 			SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
 			con.connect();
 			model = new RDFModelGenerator("localhost",prefix);
-			model.createModel();
+			model.createModel(0);
 			model.newTableInstance(tableName);
 			con.loadModelFromDB(sqlStatement, model, "id");
 			
@@ -189,7 +189,9 @@ public class BasicMapper {
 			model.setBaseNamespace(url);
 			model.setSystemNamespace(model.getBaseNamespace() + prefix + "#");
 			model.addNsPrefix(prefix);
-			model.newTableInstance(tableName);
+			//model.newTableInstance(tableName);
+			OntModel ontModel = model.getOntModel();
+			ontModel.createClass("sak:Import");
 			con.loadModelFromDB(sqlStatement, model, primaryKey);
 			
 		}
@@ -245,7 +247,8 @@ public class BasicMapper {
 			throws R2RMapperException, InstantiationException, 
 			IllegalAccessException, ClassNotFoundException, SQLException{
 		
-		model.createModel();
+		OntModel ont = model.createModel(1);
+		model.loadOwlModel(ont);
 		for (Object data : this.properties) {
 			startExtraction(PropertyLoader.parseProperty(data));		
 	    }

@@ -21,4 +21,4 @@ Database:
     Type: mysql
     Query: SELECT * FROM test;
     TableName: test
-    PrimaryKey: id   
+    PrimaryKey: id    
