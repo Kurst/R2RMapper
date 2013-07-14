@@ -39,12 +39,13 @@ public class R2RMapper {
 		new JCommander(cls, args);
 
 		PropertyLoader loader = new PropertyLoader(cls.config);
-		//BasicMapper bm2 = new BasicMapper(loader.properties);
-		//bm2.createMap();
-		//bm2.printModelToFile("TURTLE","output.rdf");	
-		ExcelWriter test = new ExcelWriter();
-		test.setOutputFile("output.xls");
-	    test.write();
+		BasicMapper bm2 = new BasicMapper(loader.properties);
+		bm2.createMap();
+		//bm2.printModelToFile("TURTLE","output.rdf");
+		bm2.printModel("TURTLE");
+		//ExcelWriter test = new ExcelWriter();
+		//test.setOutputFile("output.xls");
+	    //test.write();
 
 	}
 
