@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.beust.jcommander.JCommander;
 
 
+import edu.itmo.ailab.semantic.r2rmapper.excel.ExcelWriter;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
@@ -38,10 +39,12 @@ public class R2RMapper {
 		new JCommander(cls, args);
 
 		PropertyLoader loader = new PropertyLoader(cls.config);
-		BasicMapper bm2 = new BasicMapper(loader.properties);
-		bm2.createMap();
-		bm2.printModelToFile("TURTLE","output.rdf");	
-		
+		//BasicMapper bm2 = new BasicMapper(loader.properties);
+		//bm2.createMap();
+		//bm2.printModelToFile("TURTLE","output.rdf");	
+		ExcelWriter test = new ExcelWriter();
+		test.setOutputFile("output.xls");
+	    test.write();
 
 	}
 
