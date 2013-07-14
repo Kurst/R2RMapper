@@ -142,7 +142,7 @@ public class RDFModelGenerator{
 		try{		
 			Resource resource;
 			Resource object;
-						
+			
 			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + subj);
 			resource = ontModel.createResource(prefix + ":"+table+"_PK_" + subj);
 			object = ontModel.createResource( systemNamespace + "TBL_" + table);
@@ -170,8 +170,14 @@ public class RDFModelGenerator{
 		try{
 			LOGGER.info("[RDF Model Generator] Add subject as new statement: " + obj);
 			Property property;	
-			property = ontModel.createProperty(systemNamespace + predicate);
-			ontModel.add(resource, property, obj);
+			
+			if(obj != null){
+				property = ontModel.createProperty(systemNamespace + predicate);
+				ontModel.add(resource, property, obj);
+			}else{
+				LOGGER.debug("[RDF Model Generator] Skipping null column");
+			}
+			
 
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF statement initializing failed", ex);
