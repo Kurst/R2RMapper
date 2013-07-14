@@ -105,7 +105,7 @@ public class SQLLoader {
 		
 	}
 	
-	public void loadModelFromDB(String query, RDFModelGenerator model)
+	public void loadModelFromDB(String query, RDFModelGenerator model, String primaryKey)
 			throws SQLException, R2RMapperException {
 		Statement statement;
 		ResultSet resultSet;
@@ -122,7 +122,7 @@ public class SQLLoader {
 			resultSetMetaData = (ResultSetMetaData) resultSet.getMetaData();
 			numColumns = resultSetMetaData.getColumnCount();
 			while (resultSet.next()) {
-				Resource r = model.newInstance( resultSet.getString("id"), resultSetMetaData.getTableName(1));
+				Resource r = model.newInstance( resultSet.getString(primaryKey), resultSetMetaData.getTableName(1));
 				for (int col = 1; col <= numColumns; ++col) {
 					model.addStatement(r, resultSetMetaData.getColumnName(col), resultSet.getString(col));	
 				}

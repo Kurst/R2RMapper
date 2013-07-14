@@ -15,6 +15,7 @@ import com.hp.hpl.jena.rdf.model.RDFWriter;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.Driver;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.SQLLoader;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
+import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyType;
 
 public class BasicMapper {
@@ -27,6 +28,7 @@ public class BasicMapper {
 	private String jdbcUrl;
 	private String dbUser;
 	private String dbPassword;
+	private String primaryKey;
 	private Driver jdbcDriver; 
 	private RDFModelGenerator model = new RDFModelGenerator();
 	private List<Object> properties = new ArrayList<Object>();
@@ -116,6 +118,14 @@ public class BasicMapper {
 	public void setProperties(List<Object> properties) {
 		this.properties = properties;
 	}
+	
+	public String getPrimaryKey() {
+		return primaryKey;
+	}
+
+	public void setPrimaryKey(String primaryKey) {
+		this.primaryKey = primaryKey;
+	}
 
 	/**
 	 * Extract data into new model.
@@ -139,7 +149,7 @@ public class BasicMapper {
 			model = new RDFModelGenerator("localhost",prefix);
 			model.createModel();
 			model.newTableInstance(tableName);
-			con.loadModelFromDB(sqlStatement, model);
+			con.loadModelFromDB(sqlStatement, model, "id");
 			
 		}
 	}
@@ -166,9 +176,10 @@ public class BasicMapper {
 		String dbPassword = property.get(PropertyType.PASSWORD);
 		Driver jdbcDriver = Driver.getDriverByType(property.get(PropertyType.TYPE));
 		String sqlStatement = property.get(PropertyType.QUERY);
+		String primaryKey = property.get(PropertyType.PRIMARYKEY);
 		
 		if(tableName == null || prefix == null || sqlStatement == null 
-				|| jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null){
+				|| jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null || primaryKey == null){
 			throw new R2RMapperException("Not all mandatory parameters were provided");
 		}else{
 			LOGGER.info("[R2R Mapper] Extracting data from RDB for " + name);		
@@ -179,7 +190,7 @@ public class BasicMapper {
 			model.setSystemNamespace(model.getBaseNamespace() + prefix + "#");
 			model.addNsPrefix(prefix);
 			model.newTableInstance(tableName);
-			con.loadModelFromDB(sqlStatement, model);
+			con.loadModelFromDB(sqlStatement, model, primaryKey);
 			
 		}
 		
@@ -236,82 +247,11 @@ public class BasicMapper {
 		
 		model.createModel();
 		for (Object data : this.properties) {
-			startExtraction(this.parseProperty(data));		
+			startExtraction(PropertyLoader.parseProperty(data));		
 	    }
 	}
 	
-	/**
-	 * Parse properties from Object.
-	 * 
-	 * @param prop
-	 * @return
-	 * @throws R2RMapperException
-	 */
-	@SuppressWarnings("rawtypes")
-	public Map <PropertyType, String> parseProperty(Object prop) 
-			throws R2RMapperException{
-		Map yamlProperty = (Map) prop;
-		Map yamlDBProperty = (Map) yamlProperty.get("Database");
-		Map <PropertyType, String> property;
-		property = new HashMap<PropertyType, String>();
-		
-		if((String) yamlProperty.get("Name") != null){
-			property.put(PropertyType.NAME, (String) yamlProperty.get("Name"));
-		}else{
-			throw new R2RMapperException("Property Name is missing");
-		}
-		
-		if((String) yamlProperty.get("Url") != null){
-			property.put(PropertyType.URL, (String) yamlProperty.get("Url"));
-		}else{
-			throw new R2RMapperException("Property Url is missing");
-		}
-		
-		if((String) yamlProperty.get("Prefix") != null){
-			property.put(PropertyType.PREFIX, (String) yamlProperty.get("Prefix"));
-		}else{
-			throw new R2RMapperException("Property Prefix is missing");
-		}
-		
-		if((String) yamlDBProperty.get("JdbcUrl") != null ){
-			property.put(PropertyType.JDBCURL, (String) yamlDBProperty.get("JdbcUrl"));
-		}else{
-			throw new R2RMapperException("Property JdbcUrl is missing");
-		}
-		
-		if((String) yamlDBProperty.get("Username") != null ){
-			property.put(PropertyType.USERNAME, (String) yamlDBProperty.get("Username"));
-		}else{
-			throw new R2RMapperException("Property Username is missing");
-		}
-		
-		if((String) yamlDBProperty.get("Password") != null ){
-			property.put(PropertyType.PASSWORD, (String) yamlDBProperty.get("Password"));
-		}else{
-			property.put(PropertyType.PASSWORD, ""); // provide empty password
-		}
-		
-		if((String) yamlDBProperty.get("Type") != null ){
-			property.put(PropertyType.TYPE, (String) yamlDBProperty.get("Type"));
-		}else{
-			throw new R2RMapperException("Property Type is missing");
-		}
-		
-		if((String) yamlDBProperty.get("Query") != null ){
-			property.put(PropertyType.QUERY, (String) yamlDBProperty.get("Query"));
-		}else{
-			throw new R2RMapperException("Property Query is missing");
-		}
-		
-		if((String) yamlDBProperty.get("TableName") != null ){
-			property.put(PropertyType.TABLENAME, (String) yamlDBProperty.get("TableName"));
-		}else{
-			throw new R2RMapperException("Property TableName is missing");
-		}
-		
-		return property;	
-		
-	}
+	
 	
 	/**
 	 * Transform file encoding
@@ -343,6 +283,8 @@ public class BasicMapper {
 	        }
 	    }
 	}
+
+	
 
 	
 	

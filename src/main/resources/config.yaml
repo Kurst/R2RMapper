@@ -1,14 +1,15 @@
 ---
 Name: System 1
 Url: http://localhost/
-Prefix: sys1
+Prefix: sak
 Database:
-    JdbcUrl: jdbc:mysql://localhost/r2r
+    JdbcUrl: jdbc:mysql://localhost/sakila
     Username: root
     Password: 
     Type: mysql
-    Query: SELECT * FROM test;
-    TableName: test
+    Query: SELECT * FROM film;
+    TableName: film
+    PrimaryKey: film_id
 ---
 Name: System 2
 Url: http://localhost/
@@ -19,4 +20,5 @@ Database:
     Password: 
     Type: mysql
     Query: SELECT * FROM test;
-    TableName: test   
+    TableName: test
+    PrimaryKey: id   
