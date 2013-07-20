@@ -1,0 +1,20 @@
+@prefix sak: <http://localhost/sak#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+sak:MatureAudience rdf:type owl:Class;
+	owl:equivalentClass [
+		rdf:type owl:Restriction;
+		owl:onProperty sak:rating;
+		owl:hasValue "R"^^<http://www.w3.org/2001/XMLSchema#string>;
+	].
+
+
+sak:HasSsn rdf:type owl:Class.
+sak:HasNoSsn rdf:type owl:Class.
+
+#Show use of a domain to infer HasSsn class membership
+sak:SSN rdfs:domain sak:HasSsn.
+

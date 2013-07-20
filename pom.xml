@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.itmo.ailab.semantic</groupId>
 	<artifactId>R2RMapper</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<name>R2RMapper Tool</name>
 
 	<properties>

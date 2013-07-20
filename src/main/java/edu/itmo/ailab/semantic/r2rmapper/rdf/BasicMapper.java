@@ -190,8 +190,8 @@ public class BasicMapper {
 			model.setSystemNamespace(model.getBaseNamespace() + prefix + "#");
 			model.addNsPrefix(prefix);
 			//model.newTableInstance(tableName);
-			OntModel ontModel = model.getOntModel();
-			ontModel.createClass("sak:Import");
+			//OntModel ontModel = model.getOntModel();
+			//ontModel.createClass("sak:RdbData");
 			con.loadModelFromDB(sqlStatement, model, primaryKey);
 			
 		}
@@ -243,11 +243,11 @@ public class BasicMapper {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public void createMap() 
+	public void createMap(Integer reasoningLevel) 
 			throws R2RMapperException, InstantiationException, 
 			IllegalAccessException, ClassNotFoundException, SQLException{
 		
-		OntModel ont = model.createModel(1);
+		OntModel ont = model.createModel(reasoningLevel);
 		model.loadOwlModel(ont);
 		for (Object data : this.properties) {
 			startExtraction(PropertyLoader.parseProperty(data));		

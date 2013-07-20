@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import com.mysql.jdbc.Connection;
@@ -116,7 +117,7 @@ public class SQLLoader {
 		
 		LOGGER.debug("[SQL Loader: loadModelFromDB] executing query: " + query);
 		try {
-			
+				
 			statement = conn.createStatement();
 			resultSet = statement.executeQuery(query);			
 			resultSetMetaData = (ResultSetMetaData) resultSet.getMetaData();
