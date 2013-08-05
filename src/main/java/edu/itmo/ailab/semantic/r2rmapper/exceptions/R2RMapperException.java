@@ -5,7 +5,7 @@ package edu.itmo.ailab.semantic.r2rmapper.exceptions;
 	
 
 	/**
-	 * 
+	 * Custom Exception class
 	 */
 	private static final long serialVersionUID = -8644631752018296125L;
 

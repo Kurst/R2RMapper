@@ -1,11 +1,11 @@
 package edu.itmo.ailab.semantic.r2rmapper.main;
 
 /**
- * 
+ *
  * R2RMapper Main
  *
  * Interface here.
- * 
+ *
  *
  */
 
@@ -20,27 +20,44 @@ import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
 
 
 public class R2RMapper {
-	
+
 	public static final Logger LOGGER=Logger.getLogger(R2RMapper.class);
-	
+
 
 	/**
 	 * Main run method.
-	 * 
+	 *
 	 * @param args
-	 * @throws R2RMapperException 
+	 * @throws R2RMapperException
 	 */
 	public static void main(String[] args)
 			throws Exception {
-					
+
 		CommandLine cls = new CommandLine();
 		new JCommander(cls, args);
+        PropertyLoader loader;
+        BasicMapper bm;
 
-		PropertyLoader loader = new PropertyLoader(cls.config);
-		BasicMapper bm2 = new BasicMapper(loader.properties);
-		bm2.createMap(1);
-		bm2.printModelToFile("RDF/XML","output.rdf");
-		//bm2.printModel("TURTLE");
+        LOGGER.info("[R2R Mapper] Starting the application");
+		try {
+            loader = new PropertyLoader(cls.config);
+            bm = new BasicMapper(loader.properties);
+            try{
+                switch (cls.step){
+                    case "1":
+                        bm.createStructureMap();
+                        break;
+                    default:
+                        throw new R2RMapperException("Step is not defined");
+                }
+            }catch(Exception ex){
+                throw new R2RMapperException("Incorrect step",ex);
+            }
+        }catch(Exception ex){
+            throw new R2RMapperException("Initialization failed",ex);
+        }
+		//bm2.printModelToFile("RDF/XML","output.rdf");
+		bm.printModel("RDF/XML");
 
 	}
 

@@ -2,10 +2,7 @@ package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -31,13 +28,13 @@ public class BasicMapper {
 	private String primaryKey;
 	private Driver jdbcDriver; 
 	private RDFModelGenerator model = new RDFModelGenerator();
-	private List<Object> properties = new ArrayList<Object>();
+	private List<Object> properties = new ArrayList<>();
 	
 	public BasicMapper(){
-		
-		
+
+
 	}
-	
+
 	public BasicMapper(List<Object> properties){
 		this.setProperties(properties);  	
 	}
@@ -164,19 +161,19 @@ public class BasicMapper {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 */
-	public void startExtraction(Map <PropertyType, String> property) 
+	public void startExtraction(Map <PropertyType, Object> property)
 			throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
 		
-		String name = property.get(PropertyType.NAME);
-		String url = property.get(PropertyType.URL);
-		String prefix = property.get(PropertyType.PREFIX);
-		String tableName = property.get(PropertyType.TABLENAME);
-		String jdbcUrl = property.get(PropertyType.JDBCURL);
-		String dbUser = property.get(PropertyType.USERNAME);
-		String dbPassword = property.get(PropertyType.PASSWORD);
-		Driver jdbcDriver = Driver.getDriverByType(property.get(PropertyType.TYPE));
-		String sqlStatement = property.get(PropertyType.QUERY);
-		String primaryKey = property.get(PropertyType.PRIMARYKEY);
+		String name = (String) property.get(PropertyType.NAME);
+		String url = (String) property.get(PropertyType.URL);
+		String prefix = (String) property.get(PropertyType.PREFIX);
+		String tableName = (String) property.get(PropertyType.TABLENAME);
+		String jdbcUrl = (String) property.get(PropertyType.JDBCURL);
+		String dbUser = (String) property.get(PropertyType.USERNAME);
+		String dbPassword = (String) property.get(PropertyType.PASSWORD);
+		Driver jdbcDriver = Driver.getDriverByType((String) property.get(PropertyType.TYPE));
+		String sqlStatement = (String) property.get(PropertyType.QUERY);
+		String primaryKey = (String) property.get(PropertyType.PRIMARYKEY);
 		
 		if(tableName == null || prefix == null || sqlStatement == null 
 				|| jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null || primaryKey == null){
@@ -197,6 +194,36 @@ public class BasicMapper {
 		}
 		
 	}
+
+    /**
+     * Method extracts structure of database tables.
+     *
+     * @param property
+     * @throws R2RMapperException
+     * @throws SQLException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     */
+    public void startStructureExtraction(Map <PropertyType, Object> property)
+            throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+
+        String name = (String) property.get(PropertyType.NAME);
+        String url = (String) property.get(PropertyType.URL);
+        String prefix = (String) property.get(PropertyType.PREFIX);
+        String jdbcUrl = (String) property.get(PropertyType.JDBCURL);
+        String dbUser = (String) property.get(PropertyType.USERNAME);
+        String dbPassword = (String) property.get(PropertyType.PASSWORD);
+        Driver jdbcDriver = Driver.getDriverByType((String) property.get(PropertyType.TYPE));
+        List<String> tables = (List<String>) property.get(PropertyType.TABLES);
+
+        LOGGER.info("[R2R Mapper] Extracting tables structure from RDB");
+        SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
+        con.connect();
+        model.generateCustomPrefix(prefix,url);
+        con.loadStructureFromDB(tables, model);
+
+    }
 	
 	/**
 	 * Prints RDF model in console
@@ -253,10 +280,30 @@ public class BasicMapper {
 			startExtraction(PropertyLoader.parseProperty(data));		
 	    }
 	}
-	
-	
-	
-	/**
+
+    /**
+     * Creates new RDF model object of DB structure
+     *
+     * @throws R2RMapperException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
+    public void createStructureMap()
+            throws R2RMapperException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException, SQLException{
+
+        OntModel ont = model.createModel(0);
+        for (Object data : this.properties) {
+            startStructureExtraction(PropertyLoader.parseProperty(data));
+        }
+    }
+
+
+
+
+    /**
 	 * Transform file encoding
 	 * 
 	 * @param source

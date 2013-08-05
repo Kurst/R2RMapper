@@ -1,10 +1,7 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 
 import java.lang.*;
 
@@ -20,6 +17,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.OWL;
 
 
 
@@ -115,23 +113,20 @@ public class RDFModelGenerator{
 	}
 	
 	/**
-	 * Add new instance with table name to the RDF model. With name TBL_
+	 * Add new instance with table name to the RDF model.
 	 * 
 	 * @param table
 	 * @throws R2RMapperException
 	 */
-	public void newTableInstance(String table) 
+	public Resource newTableInstance(String table)
 			throws R2RMapperException {
-		try{	
-			Resource resource;
-			Resource object;
-			
-			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + table);
-			resource = ontModel.createResource(prefix + ":TBL_" + table);
-			object = ontModel.createResource( "rdfs:Class");
-			resource.addProperty(RDF.type, object);
+		try{
+			LOGGER.info("[RDF Model Generator] Add subject as new Class instance: " + table);
+            Resource resource = ontModel.createResource(createURI(prefix,table));
+			resource.addProperty(RDF.type, RDFS.Class);
 			resource.addProperty(RDFS.label, table);
 
+            return resource;
 		}catch(Exception ex){
 			throw new R2RMapperException("new RDF instance initializing failed", ex);
 		}
@@ -199,42 +194,59 @@ public class RDFModelGenerator{
 
 
 	}
-	
-	/*@Deprecated
-	public void addTripple(String subj, String table) 
-			throws R2RMapperException {
-		
-		try{		
-			
-			Resource resource = ontModel.createResource(prefix + ":TrippleMap_" + subj);	
-			resource.addProperty(RDF.type, ontModel
-											.createResource( rrNamespace + "TriplesMap"));
-			
-			Property logicalTableProperty = ontModel.createProperty(rrNamespace + "LogicalTable");
-			Property tableNameProperty = ontModel.createProperty(rrNamespace + "tableName");
-			
-			resource.addProperty(logicalTableProperty, ontModel
-												.createResource()
-												.addProperty(tableNameProperty,table));
-			
-			Property subjectMapProperty = ontModel.createProperty(rrNamespace + "subjectMap");
-			Property templateProperty = ontModel.createProperty(rrNamespace + "template");
-			resource.addProperty(subjectMapProperty,ontModel
-													.createResource()
-													.addProperty(templateProperty, "http://localhost/" + table + "/" + subj));
-			
-			
-		}catch(Exception ex){
-			throw new R2RMapperException("new RDF instance initializing failed", ex);
-		}
-		
-	}*/
 
-	public void createURI(String value) {
-		// TODO Create safe URI
+    /**
+     * Add new DatatypeProperty from column name to the RDF model.
+     *
+     * @param columnName
+     * @param table
+     * @param tableName
+     * @throws R2RMapperException
+     */
+    public void addDatatypeProperty(String columnName, Resource table, String tableName)
+            throws R2RMapperException {
+        try{
+            LOGGER.info("[RDF Model Generator] Add column " +columnName+" as new DatatypeProperty");
+            Resource resource = ontModel.createResource(createURI(prefix,tableName+"_"+columnName));
+            resource.addProperty(RDF.type, OWL.DatatypeProperty);
+            resource.addProperty(RDFS.domain, table);
+            resource.addProperty(RDFS.label, columnName);
 
+
+        }catch(Exception ex){
+            throw new R2RMapperException("new RDF instance initializing failed", ex);
+        }
+
+
+    }
+
+
+	public String createURI(String prefix, String name) {
+		String res = prefix + ":" + name;
+
+        return res.replaceAll(" ", "_");
 	}
-	
+
+    /**
+     * Method for generating all custom prefixes
+     *
+     * @param prefix
+     * @param url
+     * @throws R2RMapperException
+     */
+    public void generateCustomPrefix(String prefix, String url){
+        this.setPrefix(prefix);
+        this.setBaseNamespace(url);
+        this.setSystemNamespace(this.getBaseNamespace() + prefix + "#");
+        this.addNsPrefix(prefix);
+    }
+
+    /**
+     * Method for loading owl into model
+     *
+     * @param model
+     * @throws R2RMapperException
+     */
 	public OntModel loadOwlModel(OntModel model) {
 		FileInputStream inputStream = null;
 
@@ -246,8 +258,10 @@ public class RDFModelGenerator{
 					+ throwable.getClass().getName() + throwable.getMessage());
 		} finally {
 			try {
-				inputStream.close();
-			} catch (Throwable throwable) {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (Throwable throwable) {
 				System.err.println("Error closing input file");
 				throwable.printStackTrace();
 				System.exit(4);

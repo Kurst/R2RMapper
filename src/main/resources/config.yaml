@@ -1,18 +1,6 @@
 ---
 Name: System 1
 Url: http://localhost/
-Prefix: sak
-Database:
-    JdbcUrl: jdbc:mysql://localhost/sakila
-    Username: root
-    Password: 
-    Type: mysql
-    Query: SELECT * FROM film;
-    TableName: film
-    PrimaryKey: film_id
----
-Name: System 2
-Url: http://localhost/
 Prefix: sys2
 Database:
     JdbcUrl: jdbc:mysql://localhost/r2r
@@ -20,5 +8,6 @@ Database:
     Password: 
     Type: mysql
     Query: SELECT * FROM test;
+    Tables: test , test2
     TableName: test
-    PrimaryKey: id    
+    PrimaryKey: id
