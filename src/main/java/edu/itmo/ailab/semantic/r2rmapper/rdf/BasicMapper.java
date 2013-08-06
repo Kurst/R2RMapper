@@ -300,42 +300,6 @@ public class BasicMapper {
         }
     }
 
-
-
-
-    /**
-	 * Transform file encoding
-	 * 
-	 * @param source
-	 * @param srcEncoding
-	 * @param target
-	 * @param tgtEncoding
-	 * @throws IOException
-	 */
-	public static void transformToUTF8(File source, String srcEncoding, File target, String tgtEncoding) 
-			throws IOException {
-	    BufferedReader br = null;
-	    BufferedWriter bw = null;
-	    try{
-	        br = new BufferedReader(new InputStreamReader(new FileInputStream(source),srcEncoding));
-	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(target), tgtEncoding));
-	        char[] buffer = new char[16384];
-	        int read;
-	        while ((read = br.read(buffer)) != -1)
-	            bw.write(buffer, 0, read);
-	    } finally {
-	        try {
-	            if (br != null)
-	                br.close();
-	        } finally {
-	            if (bw != null)
-	                bw.close();
-	        }
-	    }
-	}
-
-	
-
 	
 	
 }

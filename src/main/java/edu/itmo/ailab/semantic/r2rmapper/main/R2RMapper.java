@@ -56,8 +56,8 @@ public class R2RMapper {
         }catch(Exception ex){
             throw new R2RMapperException("Initialization failed",ex);
         }
-		//bm2.printModelToFile("RDF/XML","output.rdf");
-		bm.printModel("RDF/XML");
+		bm.printModelToFile("TURTLE","output.rdf");
+		//bm.printModel("RDF/XML");
 
 	}
 

@@ -16,6 +16,7 @@ import com.mysql.jdbc.ResultSetMetaData;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 
+import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDType;
 import org.apache.log4j.Logger;
 
 
@@ -160,7 +161,7 @@ public class SQLLoader {
                 metadata = (ResultSetMetaData) resultSet.getMetaData();
                 res = model.newTableInstance(tableName);
                 for (int col = 1; col <= metadata.getColumnCount(); ++col) {
-                    model.addDatatypeProperty(metadata.getColumnName(col), res, tableName);
+                    model.addDatatypeProperty(metadata.getColumnName(col),  metadata.getColumnTypeName(col), res, tableName);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
