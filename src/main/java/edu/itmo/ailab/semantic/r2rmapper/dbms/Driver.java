@@ -1,7 +1,13 @@
 package edu.itmo.ailab.semantic.r2rmapper.dbms;
 
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * Drivers for RDBMS.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ */
 public class Driver {
 	public static Driver MysqlDriver = new Driver("com.mysql.jdbc.Driver");
     public static Driver PostgreSQLDriver = new Driver("org.postgresql.Driver");

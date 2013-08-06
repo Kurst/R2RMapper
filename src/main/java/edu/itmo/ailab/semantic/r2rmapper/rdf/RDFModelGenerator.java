@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 
 import java.lang.*;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
@@ -21,7 +20,14 @@ import com.hp.hpl.jena.vocabulary.OWL;
 
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * RDFModelGenerator. Class that generates RDF model from DB.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ *
+ */
 public class RDFModelGenerator{
 	
 	public static final Logger LOGGER=Logger.getLogger(RDFModelGenerator.class);

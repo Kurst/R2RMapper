@@ -5,7 +5,13 @@ import java.util.List;
 
 import com.beust.jcommander.Parameter;
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * Parsing of command line args.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ */
 public class CommandLine {
 
     @Parameter

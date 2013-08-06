@@ -1,8 +1,10 @@
 package edu.itmo.ailab.semantic.r2rmapper.xsd;
 
 /**
- * R2R Mapper. XSD Types.
- * User: Ilya Semerhanov
+ * R2R Mapper. It is a free software.
+ *
+ * XSD Types.
+ * author: Ilya Semerhanov
  * Date: 06.08.13
  *
  */

@@ -15,6 +15,14 @@ import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyType;
 
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * BasicMapper. Class that starts extraction.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ *
+ */
 public class BasicMapper {
 	
 	public static final Logger LOGGER=Logger.getLogger(BasicMapper.class);

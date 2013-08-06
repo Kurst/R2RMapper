@@ -1,14 +1,5 @@
 package edu.itmo.ailab.semantic.r2rmapper.main;
 
-/**
- *
- * R2RMapper Main
- *
- * Interface here.
- *
- *
- */
-
 import org.apache.log4j.Logger;
 
 import com.beust.jcommander.JCommander;
@@ -18,7 +9,13 @@ import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
 
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * Main class.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ */
 public class R2RMapper {
 
 	public static final Logger LOGGER=Logger.getLogger(R2RMapper.class);
@@ -56,8 +53,8 @@ public class R2RMapper {
         }catch(Exception ex){
             throw new R2RMapperException("Initialization failed",ex);
         }
-		bm.printModelToFile("TURTLE","output.rdf");
-		//bm.printModel("RDF/XML");
+		//bm.printModelToFile("TURTLE","output.rdf");
+		bm.printModel("RDF/XML");
 
 	}
 

@@ -19,7 +19,13 @@ import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDType;
 import org.apache.log4j.Logger;
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * Class for extracting data from RDBMS.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ */
 public class SQLLoader {
 
     public static final Logger LOGGER = Logger.getLogger(SQLLoader.class);

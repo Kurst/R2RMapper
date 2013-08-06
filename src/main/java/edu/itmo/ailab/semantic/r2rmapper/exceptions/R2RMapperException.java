@@ -1,6 +1,12 @@
 package edu.itmo.ailab.semantic.r2rmapper.exceptions;
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * Custom exception.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ */
  public class R2RMapperException extends Exception {
 	
 

@@ -1,10 +1,11 @@
 package edu.itmo.ailab.semantic.r2rmapper.dbms;
 
 /**
- * R2R Mapper
- * User: Ilya Semerhanov
- * Date: 06.08.13
+ * R2R Mapper. It is a free software.
  *
+ * SLQDataTypes. Not all datatypes are suppported.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
  */
 public enum SQLDataType {
 

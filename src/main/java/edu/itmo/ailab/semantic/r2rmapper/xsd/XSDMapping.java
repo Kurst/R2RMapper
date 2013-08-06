@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * R2R Mapper. Mapping between SQLDataTypes and XSDTypes
+ * R2R Mapper.  It is a free software.
+ *
+ * Mapping between SQLDataTypes and XSDTypes
  * Not all types are supported.
- * User: Ilya Semerhanov
+ * Author: Ilya Semerhanov
  * Date: 06.08.13
  *
  */

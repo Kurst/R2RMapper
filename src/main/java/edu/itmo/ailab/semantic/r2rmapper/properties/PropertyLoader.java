@@ -13,7 +13,13 @@ import org.yaml.snakeyaml.Yaml;
 
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 
-
+/**
+ * R2R Mapper. It is a free software.
+ *
+ * Class for loading properties from Yaml file.
+ * Author: Ilya Semerhanov
+ * Date: 06.08.13
+ */
 public class PropertyLoader {
 
     public static final Logger LOGGER = Logger.getLogger(PropertyLoader.class);

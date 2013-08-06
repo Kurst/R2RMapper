@@ -9,8 +9,10 @@ import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDType;
 import java.io.*;
 
 /**
- * R2R Mapper. Usefull RDF utilities
- * User: Ilya Semerhanov
+ * R2R Mapper. It is a free software.
+ *
+ * Usefull RDF utilities
+ * Author: Ilya Semerhanov
  * Date: 06.08.13
  *
  */
