@@ -127,20 +127,4 @@ public class PropertyLoader {
 
     }
 
-	/*public void parse() 
-			throws FileNotFoundException{
-		InputStream input = new FileInputStream(new File(filePath));
-		Yaml yaml = new Yaml();
-	    for (Object data : yaml.loadAll(input)) {
-	        //System.out.println(data);
-	    	Map o = (Map) data;
-	    	System.out.println(o.get("Stack"));
-	    	
-	        
-	 
-		
-	    
-	}
-	    }	*/
-
 }
