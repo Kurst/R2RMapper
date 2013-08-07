@@ -5,12 +5,11 @@ import java.io.FileInputStream;
 
 import java.lang.*;
 
+import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.*;
 import org.apache.log4j.Logger;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -121,13 +120,13 @@ public class RDFModelGenerator{
 
 			LOGGER.info("[RDF Model Generator] Add subject as new Class instance: " + table);
             Resource resource = ontModel.createResource(RDFUtils.createURI(prefix,table));
-			resource.addProperty(RDF.type, RDFS.Class);
+			resource.addProperty(RDF.type, OWL.Class);
             resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,table,"STRING"));
             return resource;
 		}catch(Exception ex){
 			throw new R2RMapperException("[RDF Model Generator] New RDF instance initializing failed", ex);
 		}
-		
+
 		
 	}
 	
@@ -215,6 +214,26 @@ public class RDFModelGenerator{
 
 
     }
+
+    /**
+     * Add new Individuals to the RDF model.
+     *
+
+     * @throws R2RMapperException
+     */
+    public void addIndividuals(String name, String table)
+            throws R2RMapperException {
+        try{
+            Individual i = ontModel.createIndividual(RDFUtils.createURI(prefix,name),ontModel.getResource(RDFUtils.createURI(prefix,table)));
+            DatatypeProperty p1 = ontModel.getDatatypeProperty(RDFUtils.createURI(prefix,"test2_name"));
+            i.addProperty( p1, ontModel.createTypedLiteral( "blabla" ));
+        }catch(Exception ex){
+            throw new R2RMapperException("[RDF Model Generator] New RDF instance initializing failed", ex);
+        }
+
+
+    }
+
 
 
     /**
