@@ -20,8 +20,8 @@ public class CommandLine {
     @Parameter(names = {"--config"}, description = "Path to config file")
     public String config;
 
-    @Parameter(names = {"--step"}, description = "Define run step")
-    public String step;
+    @Parameter(names = {"--phase"}, description = "Define run phase")
+    public String phase;
 
     @Parameter(names = {"--settings"}, description = "Define path to settings")
     public String settings;

@@ -35,6 +35,8 @@ public class R2RMapper {
 		new JCommander(cls, args);
         PropertyLoader loader;
         BasicMapper bm;
+        String outputFileName = "integrated_ontology_phase_1.owl";
+        String outputFormat = "RDF/XML";
 
         LOGGER.info("[R2R Mapper] Starting the application");
 		try {
@@ -47,10 +49,12 @@ public class R2RMapper {
             loader = new PropertyLoader(cls.config);
             bm = new BasicMapper(loader.properties);
             try{
-                switch (cls.step){
+                switch (cls.phase){
                     case "1":
                         RedisHandler.flushDB();
                         bm.createStructureMap();
+                        bm.printModelToFile(outputFormat,outputFileName);
+                        //bm.printModel(outputFormat);
                         break;
                     default:
                         throw new R2RMapperException("Step is not defined");
@@ -61,8 +65,7 @@ public class R2RMapper {
         }catch(Exception ex){
             throw new R2RMapperException("Initialization failed",ex);
         }
-		//bm.printModelToFile("TURTLE","output.rdf");
-		bm.printModel("RDF/XML");
+
         RedisHandler.saveDatasetToDisk();
 	}
 
