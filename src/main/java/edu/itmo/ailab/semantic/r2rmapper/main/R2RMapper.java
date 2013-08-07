@@ -49,6 +49,7 @@ public class R2RMapper {
             try{
                 switch (cls.step){
                     case "1":
+                        RedisHandler.flushDB();
                         bm.createStructureMap();
                         break;
                     default:
@@ -62,7 +63,7 @@ public class R2RMapper {
         }
 		//bm.printModelToFile("TURTLE","output.rdf");
 		bm.printModel("RDF/XML");
-
+        RedisHandler.saveDatasetToDisk();
 	}
 
 }

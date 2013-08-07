@@ -26,7 +26,7 @@ public class RedisHandler {
     private static volatile RedisHandler instance;
     public static String settings;
     private static JedisPool pool;
-    private static Jedis jedis;
+    private static Jedis redis;
 
     private RedisHandler(){
 
@@ -59,28 +59,50 @@ public class RedisHandler {
 
         LOGGER.info("[RedisHandler] Connecting to Redis server " + hostname + ":" + port.toString());
         pool = new JedisPool(new JedisPoolConfig(), hostname, port);
-        jedis = pool.getResource();
-        pool.returnResource(jedis);
+        redis = pool.getResource();
+        pool.returnResource(redis);
         LOGGER.info("[RedisHandler] Connection established");
     }
 
     public static void addClassMap(String key,String tableName, String className){
-        jedis = pool.getResource();
+        redis = pool.getResource();
+
         try {
-            jedis.hset(key,tableName,className);
-            LOGGER.info("[RedisHandler] New key added: " + key);
+            redis.hset(key,tableName,className);
+            LOGGER.info("[RedisHandler] New key/value pair added: " + key + " -> " + tableName);
             LOGGER.debug("[RedisHandler] key: " + key + " field: " + tableName + " value: " + className);
         } finally {
-            pool.returnResource(jedis);
+            pool.returnResource(redis);
         }
     }
 
     public static void addDataTypeProperty(String key,String columnName, String DataTypeProperty){
-        jedis = pool.getResource();
+        redis = pool.getResource();
         try {
-            jedis.hset(key,columnName,DataTypeProperty);
+            redis.hset(key,columnName,DataTypeProperty);
+            LOGGER.info("[RedisHandler] New key/value pair added: " + key + " -> " + columnName);
+            LOGGER.debug("[RedisHandler] key: " + key + " field: " + columnName + " value: " + DataTypeProperty);
         } finally {
-            pool.returnResource(jedis);
+            pool.returnResource(redis);
+        }
+    }
+
+    public static void saveDatasetToDisk(){
+        redis = pool.getResource();
+        try {
+            redis.save();
+            LOGGER.info("[RedisHandler] Redis dataset was saved to disk");
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+    public static void flushDB(){
+        redis = pool.getResource();
+        try {
+            LOGGER.info("[RedisHandler] Cleaning Redis dataset");
+            redis.flushDB();
+        } finally {
+            pool.returnResource(redis);
         }
     }
 

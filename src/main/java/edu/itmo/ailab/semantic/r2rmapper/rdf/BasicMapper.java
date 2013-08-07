@@ -4,13 +4,13 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 
+import edu.itmo.ailab.semantic.r2rmapper.dbms.DBLoader;
 import org.apache.log4j.Logger;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 
 import edu.itmo.ailab.semantic.r2rmapper.dbms.Driver;
-import edu.itmo.ailab.semantic.r2rmapper.dbms.SQLLoader;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyType;
@@ -149,7 +149,7 @@ public class BasicMapper {
 			throw new R2RMapperException("Not all mandatory parameters were provided");
 		}else{
 			LOGGER.info("[R2R Mapper] Extracting data from RDB");		
-			SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
+			DBLoader con = new DBLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
 			con.connect();
 			model = new RDFModelGenerator("localhost",prefix);
 			model.createModel(0);
@@ -188,7 +188,7 @@ public class BasicMapper {
 			throw new R2RMapperException("Not all mandatory parameters were provided");
 		}else{
 			LOGGER.info("[R2R Mapper] Extracting data from RDB for " + name);		
-			SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
+			DBLoader con = new DBLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
 			con.connect();
 			model.setPrefix(prefix);
 			model.setBaseNamespace(url);
@@ -226,7 +226,7 @@ public class BasicMapper {
         List<String> tables = (List<String>) property.get(PropertyType.TABLES);
 
         LOGGER.info("[R2R Mapper] Extracting tables structure from RDB");
-        SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
+        DBLoader con = new DBLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
         con.connect();
         model.generateCustomPrefix(prefix,url);
         con.loadStructureFromDB(name, tables, model);

@@ -200,7 +200,7 @@ public class RDFModelGenerator{
      * @param tableName
      * @throws R2RMapperException
      */
-    public void addDatatypeProperty(String columnName, String columnType, Resource table, String tableName)
+    public Resource addDatatypeProperty(String columnName, String columnType, Resource table, String tableName)
             throws R2RMapperException {
         try{
             LOGGER.info("[RDF Model Generator] Add column " +columnName+" as new DatatypeProperty");
@@ -208,6 +208,7 @@ public class RDFModelGenerator{
             resource.addProperty(RDF.type, OWL.DatatypeProperty);
             resource.addProperty(RDFS.domain, table);
             resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,columnName,columnType));
+            return resource;
         }catch(Exception ex){
             throw new R2RMapperException("[RDF Model Generator] New RDF instance initializing failed", ex);
         }
