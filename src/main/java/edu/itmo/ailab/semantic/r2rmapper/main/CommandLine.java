@@ -17,10 +17,13 @@ public class CommandLine {
     @Parameter
     public List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = {"-config"}, description = "Path to config file")
+    @Parameter(names = {"--config"}, description = "Path to config file")
     public String config;
 
-    @Parameter(names = {"-step"}, description = "Define run step")
+    @Parameter(names = {"--step"}, description = "Define run step")
     public String step;
+
+    @Parameter(names = {"--settings"}, description = "Define path to settings")
+    public String settings;
 
 }

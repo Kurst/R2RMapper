@@ -1,5 +1,6 @@
 package edu.itmo.ailab.semantic.r2rmapper.main;
 
+import edu.itmo.ailab.semantic.r2rmapper.dbms.RedisHandler;
 import org.apache.log4j.Logger;
 
 import com.beust.jcommander.JCommander;
@@ -37,6 +38,12 @@ public class R2RMapper {
 
         LOGGER.info("[R2R Mapper] Starting the application");
 		try {
+            if(cls.settings == null){
+                RedisHandler.getInstance("src/main/resources/settings.yaml");
+            }else{
+                RedisHandler.getInstance(cls.settings);
+            }
+            RedisHandler.connect();
             loader = new PropertyLoader(cls.config);
             bm = new BasicMapper(loader.properties);
             try{

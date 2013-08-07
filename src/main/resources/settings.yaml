@@ -1,0 +1,3 @@
+RedisServer:
+    hostname: 172.16.64.30
+    port: 6379

@@ -229,7 +229,7 @@ public class BasicMapper {
         SQLLoader con = new SQLLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
         con.connect();
         model.generateCustomPrefix(prefix,url);
-        con.loadStructureFromDB(tables, model);
+        con.loadStructureFromDB(name, tables, model);
 
     }
 	

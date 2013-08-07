@@ -108,7 +108,7 @@ public class SQLLoader {
         statement = null;
         resultSet = null;
 
-        LOGGER.debug("[SQL Loader: loadModelFromDB] executing query: " + query);
+        LOGGER.debug("[SQL Loader] executing query: " + query);
         try {
 
             statement = conn.createStatement();
@@ -150,7 +150,7 @@ public class SQLLoader {
         }
     }
 
-    public void loadStructureFromDB(List<String> tables, RDFModelGenerator model)
+    public void loadStructureFromDB(String systemName, List<String> tables, RDFModelGenerator model)
             throws SQLException, R2RMapperException {
         Statement statement = null;
         ResultSet resultSet = null;
@@ -159,13 +159,15 @@ public class SQLLoader {
         String query;
 
         for (String tableName : tables) {
-            LOGGER.debug("[SQL Loader: loadStructureFromDB] preparing query for " + tableName);
+            LOGGER.debug("[SQL Loader] preparing query for " + tableName);
             query = "SELECT * FROM " + tableName + " WHERE 0 = 1;";
             try {
                 statement = conn.createStatement();
                 resultSet = statement.executeQuery(query);
                 metadata = (ResultSetMetaData) resultSet.getMetaData();
                 res = model.newTableInstance(tableName);
+                String redis_key = (systemName + "_" + tableName).replaceAll(" ", "_");
+                RedisHandler.addClassMap(redis_key,tableName,res.getURI());
                 for (int col = 1; col <= metadata.getColumnCount(); ++col) {
                     model.addDatatypeProperty(metadata.getColumnName(col),  metadata.getColumnTypeName(col), res, tableName);
                 }
