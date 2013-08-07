@@ -40,7 +40,6 @@ public class BasicMapper {
 	
 	public BasicMapper(){
 
-
 	}
 
 	public BasicMapper(List<Object> properties){
@@ -51,68 +50,55 @@ public class BasicMapper {
 		return tableName;
 	}
 
-
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
-
 
 	public String getPrefix() {
 		return prefix;
 	}
 
-
-	public void setPrefix(String prefix) {
+  	public void setPrefix(String prefix) {
 		this.prefix = prefix;
 	}
-
 
 	public String getSqlStatement() {
 		return sqlStatement;
 	}
 
-
 	public void setSqlStatement(String sqlStatement) {
 		this.sqlStatement = sqlStatement;
 	}
-
 
 	public String getJdbcUrl() {
 		return jdbcUrl;
 	}
 
-
 	public void setJdbcUrl(String jdbcUrl) {
 		this.jdbcUrl = jdbcUrl;
 	}
-
 
 	public String getDbUser() {
 		return dbUser;
 	}
 
-
 	public void setDbUser(String dbUser) {
 		this.dbUser = dbUser;
 	}
-
 
 	public String getDbPassword() {
 		return dbPassword;
 	}
 
-
 	public void setDbPassword(String dbPassword) {
 		this.dbPassword = dbPassword;
 	}
-
 
 	public Driver getJdbcDriver() {
 		return jdbcDriver;
 	}
 
-
-	public void setJdbcDriver(Driver jdbcDriver) {
+   	public void setJdbcDriver(Driver jdbcDriver) {
 		this.jdbcDriver = jdbcDriver;
 	}
 	
@@ -169,8 +155,9 @@ public class BasicMapper {
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 */
-	public void startExtraction(Map <PropertyType, Object> property)
-			throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+	public void startMetadataExtraction(Map <PropertyType, Object> property)
+			throws R2RMapperException, SQLException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException{
 		
 		String name = (String) property.get(PropertyType.NAME);
 		String url = (String) property.get(PropertyType.URL);
@@ -214,7 +201,8 @@ public class BasicMapper {
      * @throws ClassNotFoundException
      */
     public void startStructureExtraction(Map <PropertyType, Object> property)
-            throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
+            throws R2RMapperException, SQLException, InstantiationException,
+            IllegalAccessException, ClassNotFoundException{
 
         String name = (String) property.get(PropertyType.NAME);
         String url = (String) property.get(PropertyType.URL);
@@ -252,9 +240,11 @@ public class BasicMapper {
 	/**
 	 * Prints RDF model in file
 	 * @param format
+     * @param filename
 	 * @throws IOException 
 	 */
-	public void printModelToFile(String format, String filename) throws IOException{
+	public void printModelToFile(String format, String filename)
+            throws IOException{
 		
 		LOGGER.info("[R2R Mapper] Printing output into file: output/" + filename);
 		
@@ -270,22 +260,25 @@ public class BasicMapper {
 	}
 	
 	/**
-	 * Creates new RDF model object
-	 * 
+	 * First method for preparation of extraction
+	 *
+     * @param reasoningLevel
+     * @param pathToOntology
+     * @param ontologyFormat
 	 * @throws R2RMapperException
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public void createMap(Integer reasoningLevel) 
+	public void extractMetadata(Integer reasoningLevel, String pathToOntology, String ontologyFormat)
 			throws R2RMapperException, InstantiationException, 
 			IllegalAccessException, ClassNotFoundException, SQLException{
 		
 		OntModel ont = model.createModel(reasoningLevel);
-		model.loadOwlModel(ont);
+		model.loadOwlModel(ont, pathToOntology, ontologyFormat);
 		for (Object data : this.properties) {
-			startExtraction(PropertyLoader.parseProperty(data));		
+			startMetadataExtraction(PropertyLoader.parseProperty(data));
 	    }
 	}
 

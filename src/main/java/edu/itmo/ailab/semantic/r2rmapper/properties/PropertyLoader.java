@@ -31,13 +31,31 @@ public class PropertyLoader {
     public PropertyLoader(String filePath)
             throws FileNotFoundException {
         this.filePath = filePath;
+        InputStream input = null;
 
-        InputStream input = new FileInputStream(new File(filePath));
-        Yaml yaml = new Yaml();
-        for (Object data : yaml.loadAll(input)) {
-            LOGGER.info("[ProperyLoader] Loading property: " + data);
-            properties.add(data);
+        try {
+            input = new FileInputStream(new File(filePath));
+            Yaml yaml = new Yaml();
+            for (Object data : yaml.loadAll(input)) {
+                LOGGER.info("[ProperyLoader] Loading property: " + data);
+                properties.add(data);
+            }
+        } catch (Throwable throwable) {
+            LOGGER.error("Error reading file: "
+                    + throwable.getClass().getName() +": "+ throwable.getMessage());
+            System.exit(1);
+        } finally {
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (Throwable throwable) {
+                LOGGER.error("Error closing input file");
+                throwable.printStackTrace();
+                System.exit(1);
+            }
         }
+
     }
 
     /**

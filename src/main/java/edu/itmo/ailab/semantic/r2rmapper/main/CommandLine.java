@@ -26,4 +26,8 @@ public class CommandLine {
     @Parameter(names = {"--settings"}, description = "Define path to settings")
     public String settings;
 
+    @Parameter(names = {"--ontology"}, description = "Define path to settings")
+    public String pathToOntology;
+
+
 }

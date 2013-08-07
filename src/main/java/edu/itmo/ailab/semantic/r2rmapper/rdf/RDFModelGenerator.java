@@ -89,7 +89,7 @@ public class RDFModelGenerator{
 			
 			if(reasoningLevel == 0){
 				ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);	
-			}else if (reasoningLevel == 1) { // OWL
+			}else if (reasoningLevel == 1) { // for phase 2
 				Reasoner reasoner = PelletReasonerFactory.theInstance().create();
 				Model infModel = ModelFactory.createInfModel(reasoner, ModelFactory.createDefaultModel());
 				ontModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM, infModel);
@@ -254,26 +254,29 @@ public class RDFModelGenerator{
      * Method for loading owl into model
      *
      * @param model
+     * @param pathToOntology
+     * @param ontologyFormat
      * @throws R2RMapperException
      */
-	public OntModel loadOwlModel(OntModel model) {
+	public OntModel loadOwlModel(OntModel model, String pathToOntology, String ontologyFormat) {
 		FileInputStream inputStream = null;
 
 		try {
-			inputStream = new FileInputStream("ontology.owl");
-			model.read(inputStream, null, "TURTLE");
+			inputStream = new FileInputStream(pathToOntology);
+			model.read(inputStream, null, ontologyFormat);
 		} catch (Throwable throwable) {
-			System.err.println("Error reading file: "
-					+ throwable.getClass().getName() + throwable.getMessage());
+            LOGGER.error("Error reading file: "
+                    + throwable.getClass().getName() + ": " + throwable.getMessage());
+            System.exit(1);
 		} finally {
 			try {
                 if (inputStream != null) {
                     inputStream.close();
                 }
             } catch (Throwable throwable) {
-				System.err.println("Error closing input file");
+                LOGGER.error("Error closing input file");
 				throwable.printStackTrace();
-				System.exit(4);
+				System.exit(1);
 			}
 		}
 		return model;
