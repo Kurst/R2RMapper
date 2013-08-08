@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 import com.mysql.jdbc.Connection;
@@ -97,58 +98,69 @@ public class DBLoader {
 
     }
 
-    public void loadModelFromDB(String query, RDFModelGenerator model, String primaryKey)
+    public void loadDataFromDB(String prefix, List<String> tables, RDFModelGenerator model, List<String>  primaryKeys)
             throws SQLException, R2RMapperException {
-        Statement statement;
-        ResultSet resultSet;
-        ResultSetMetaData resultSetMetaData;
-        int numColumns;
-        statement = null;
-        resultSet = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        ResultSetMetaData metadata;
+        String query;
+        String pk;
+        String redisKey;
+        String classTableName;
 
-        LOGGER.debug("[DB Loader] executing query: " + query);
-        try {
-
-            statement = conn.createStatement();
-            resultSet = statement.executeQuery(query);
-            resultSetMetaData = (ResultSetMetaData) resultSet.getMetaData();
-            numColumns = resultSetMetaData.getColumnCount();
-            while (resultSet.next()) {
-                Resource r = model.newInstance(resultSet.getString(primaryKey), resultSetMetaData.getTableName(1));
-                for (int col = 1; col <= numColumns; ++col) {
-                    model.addStatement(r, resultSetMetaData.getColumnName(col), resultSet.getString(col));
+        for (String tableName : tables) {
+            LOGGER.debug("[DB Loader] preparing query for " + tableName);
+            query = "SELECT * FROM " + tableName + ";";
+            LOGGER.debug("[DB Loader] executing query: " + query);
+            try {
+                statement = conn.createStatement();
+                resultSet = statement.executeQuery(query);
+                metadata = (ResultSetMetaData) resultSet.getMetaData();
+                redisKey = (prefix + "_" + tableName).replaceAll(" ", "_");
+                try{
+                    pk = primaryKeys.get(tables.indexOf(tableName));
+                }catch (IndexOutOfBoundsException e){
+                    throw new R2RMapperException("Number of tables is not equal to number of primary keys", e);
                 }
+                classTableName = RedisHandler.getClassTableName(redisKey,tableName);
+                while (resultSet.next()) {
+
+                    Individual i = model.addIndividual(tableName, resultSet.getString(pk),classTableName);
+                    for (int col = 1; col <= metadata.getColumnCount(); ++col) {
+                        model.addPropertyToIndividual(i, RedisHandler.getPropertyName(redisKey,metadata.getColumnName(col))
+                                ,resultSet.getString(col));
+                    }
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (Throwable t) {
-                    LOGGER.error("Failed to close result set", t);
-                }
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (Throwable t) {
+                LOGGER.error("Failed to close result set", t);
             }
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (Throwable t) {
-                    LOGGER.error("Failed to close statement", t);
-                }
+        }
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (Throwable t) {
+                LOGGER.error("Failed to close statement", t);
             }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Throwable t) {
-                    LOGGER.error("Failed to close connection", t);
-                }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (Throwable t) {
+                LOGGER.error("Failed to close connection", t);
             }
         }
     }
 
-    public void loadStructureFromDB(String systemName, List<String> tables, RDFModelGenerator model)
+    public void loadStructureFromDB(String prefix, List<String> tables, RDFModelGenerator model)
             throws SQLException, R2RMapperException {
         Statement statement = null;
         ResultSet resultSet = null;
@@ -156,6 +168,7 @@ public class DBLoader {
         Resource classMap;
         Resource dataTypeProperty;
         String query;
+        String redisKey;
 
         for (String tableName : tables) {
             LOGGER.debug("[DB Loader] preparing query for " + tableName);
@@ -164,9 +177,9 @@ public class DBLoader {
                 statement = conn.createStatement();
                 resultSet = statement.executeQuery(query);
                 metadata = (ResultSetMetaData) resultSet.getMetaData();
-                classMap = model.newTableInstance(tableName);
-                String redisKey = (systemName + "_" + tableName).replaceAll(" ", "_");
-                RedisHandler.addClassMap(redisKey,tableName,classMap.getURI());
+                classMap = model.addTableClassInstance(tableName);
+                redisKey = (prefix + "_" + tableName).replaceAll(" ", "_");
+                RedisHandler.addClassTable(redisKey,tableName,classMap.getURI());
                 for (int col = 1; col <= metadata.getColumnCount(); ++col) {
                     dataTypeProperty = model.addDatatypeProperty(metadata.getColumnName(col),
                             metadata.getColumnTypeName(col), classMap, tableName);
@@ -176,7 +189,6 @@ public class DBLoader {
                 e.printStackTrace();
 
             }
-
         }
 
         if (resultSet != null) {

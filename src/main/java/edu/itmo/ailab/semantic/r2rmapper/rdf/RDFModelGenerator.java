@@ -111,85 +111,25 @@ public class RDFModelGenerator{
 	/**
 	 * Add new instance with table name to the RDF model.
 	 * 
-	 * @param table
+	 * @param tableName
 	 * @throws R2RMapperException
 	 */
-	public Resource newTableInstance(String table)
+	public Resource addTableClassInstance(String tableName)
 			throws R2RMapperException {
 		try{
 
-			LOGGER.info("[RDF Model Generator] Add subject as new Class instance: " + table);
-            Resource resource = ontModel.createResource(RDFUtils.createURI(prefix,table));
+			LOGGER.info("[RDF Model Generator] Add subject as new Class instance: " + tableName);
+            Resource resource = ontModel.createResource(RDFUtils.createURI(prefix,tableName));
 			resource.addProperty(RDF.type, OWL.Class);
-            resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,table,"STRING"));
+            resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,tableName,"STRING"));
             return resource;
 		}catch(Exception ex){
-			throw new R2RMapperException("[RDF Model Generator] New RDF instance initializing failed", ex);
+			throw new R2RMapperException("[RDF Model Generator] New table class instance initializing failed", ex);
 		}
 
 		
 	}
 	
-	/**
-	 * Add new instace to RDF model based on primary key in db. PK_
-	 * 
-	 * @param subj
-	 * @param table
-	 * @return
-	 * @throws R2RMapperException
-	 */
-	public Resource newInstance(String subj, String table) 
-			throws R2RMapperException {
-
-		try{		
-			Resource resource;
-			Resource object;
-			
-			LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + subj);
-			resource = ontModel.createResource(prefix + ":"+table+"_PK_" + subj);
-			//object = ontModel.createResource( systemNamespace + "TBL" + table);
-			//resource.addProperty(RDFS.subClassOf, object);
-			//Property property = ontModel.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-			//object = ontModel.createResource("sak:Import");
-			//ontModel.add(resource, property, object);
-			//TODO:Fix this
-			return resource;
-		}catch(Exception ex){
-			throw new R2RMapperException("new RDF instance initializing failed", ex);
-		}
-		
-		
-	}
-	
-	/**
-	 * Add a statement into RDF model
-	 * 
-	 * @param resource
-	 * @param predicate
-	 * @param obj
-	 * @throws R2RMapperException
-	 */
-	public void addStatement(Resource resource, String predicate, String obj) 
-			throws R2RMapperException {
-	
-		try{
-			LOGGER.info("[RDF Model Generator] Add subject as new statement: " + obj);
-			Property property;	
-			
-			if(obj != null){
-				property = ontModel.createProperty(systemNamespace + predicate);
-				ontModel.add(resource, property, obj);
-			}else{
-				LOGGER.debug("[RDF Model Generator] Skipping null column");
-			}
-			
-
-		}catch(Exception ex){
-			throw new R2RMapperException("[RDF Model Generator] New RDF statement initializing failed", ex);
-		}
-
-
-	}
 
     /**
      * Add new DatatypeProperty from column name to the RDF model.
@@ -209,26 +149,49 @@ public class RDFModelGenerator{
             resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,columnName,columnType));
             return resource;
         }catch(Exception ex){
-            throw new R2RMapperException("[RDF Model Generator] New RDF instance initializing failed", ex);
+            throw new R2RMapperException("[RDF Model Generator] New DataTypeProperty creation failed", ex);
         }
 
 
     }
 
     /**
-     * Add new Individuals to the RDF model.
+     * Add new Individual to the RDF model.
      *
 
      * @throws R2RMapperException
      */
-    public void addIndividuals(String name, String table)
+    public Individual addIndividual(String tableName, String primaryKey, String superClassName)
             throws R2RMapperException {
         try{
-            Individual i = ontModel.createIndividual(RDFUtils.createURI(prefix,name),ontModel.getResource(RDFUtils.createURI(prefix,table)));
-            DatatypeProperty p1 = ontModel.getDatatypeProperty(RDFUtils.createURI(prefix,"test2_name"));
-            i.addProperty( p1, ontModel.createTypedLiteral( "blabla" ));
+            String individualName = tableName + "_"+"PK" + primaryKey;
+            LOGGER.info("[RDF Model Generator] Add individual: " + individualName);
+            Individual individ = ontModel.createIndividual(RDFUtils.createURI(prefix,individualName),ontModel.getResource(superClassName));
+            individ.addProperty(RDFS.label,individualName);
+            return individ;
         }catch(Exception ex){
-            throw new R2RMapperException("[RDF Model Generator] New RDF instance initializing failed", ex);
+            throw new R2RMapperException("[RDF Model Generator] New individual creation failed", ex);
+        }
+
+
+    }
+
+    /**
+     * Add property to individual.
+     *
+
+     * @throws R2RMapperException
+     */
+    public void addPropertyToIndividual(Individual individ, String propertyName, String propertyValue)
+            throws R2RMapperException {
+        try{
+            if(propertyValue != null){
+                DatatypeProperty property = ontModel.getDatatypeProperty(propertyName);
+                individ.addProperty(property, ontModel.createTypedLiteral(propertyValue));
+            }
+
+        }catch(Exception ex){
+            throw new R2RMapperException("[RDF Model Generator] New individual property creation failed", ex);
         }
 
 
@@ -283,8 +246,70 @@ public class RDFModelGenerator{
 
 	}
 
+    /**
+     * Add new instace to RDF model based on primary key in db. PK_
+     *
+     * @param subj
+     * @param table
+     * @return
+     * @throws R2RMapperException
+     */
+    public Resource newInstance(String subj, String table)
+            throws R2RMapperException {
 
-	
-	
+        try{
+            Resource resource;
+            Resource object;
+
+            LOGGER.info("[RDF Model Generator] Add subject as new ClassMap instance: " + subj);
+            resource = ontModel.createResource(prefix + ":"+table+"_PK_" + subj);
+            //object = ontModel.createResource( systemNamespace + "TBL" + table);
+            //resource.addProperty(RDFS.subClassOf, object);
+            //Property property = ontModel.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+            //object = ontModel.createResource("sak:Import");
+            //ontModel.add(resource, property, object);
+            //TODO:Fix this
+            return resource;
+        }catch(Exception ex){
+            throw new R2RMapperException("new RDF instance initializing failed", ex);
+        }
+
+
+    }
+
+    /**
+     * Add a statement into RDF model
+     *
+     * @param resource
+     * @param predicate
+     * @param obj
+     * @throws R2RMapperException
+     */
+    public void addStatement(Resource resource, String predicate, String obj)
+            throws R2RMapperException {
+
+        try{
+            LOGGER.info("[RDF Model Generator] Add subject as new statement: " + obj);
+            Property property;
+
+            if(obj != null){
+                property = ontModel.createProperty(systemNamespace + predicate);
+                ontModel.add(resource, property, obj);
+            }else{
+                LOGGER.debug("[RDF Model Generator] Skipping null column");
+            }
+
+
+        }catch(Exception ex){
+            throw new R2RMapperException("[RDF Model Generator] New RDF statement initializing failed", ex);
+        }
+
+
+    }
+
+
+
+
+
 
 }

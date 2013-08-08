@@ -16,9 +16,7 @@ public enum PropertyType {
 	USERNAME,
 	PASSWORD,
 	TYPE,
-	TABLENAME,
     TABLES,
-	QUERY,
-	PRIMARYKEY
+	PRIMARYKEYS
 	
 }

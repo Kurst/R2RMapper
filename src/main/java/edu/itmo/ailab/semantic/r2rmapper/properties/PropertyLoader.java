@@ -115,30 +115,20 @@ public class PropertyLoader {
             throw new R2RMapperException("Property Type is missing");
         }
 
-        if (yamlDBProperty.get("Query") != null) {
-            property.put(PropertyType.QUERY, yamlDBProperty.get("Query"));
-        } else {
-            throw new R2RMapperException("Property Query is missing");
-        }
-
-        if (yamlDBProperty.get("TableName") != null) {
-            property.put(PropertyType.TABLENAME, yamlDBProperty.get("TableName"));
-        } else {
-            throw new R2RMapperException("Property TableName is missing");
-        }
-
-        if (yamlDBProperty.get("PrimaryKey") != null) {
-            property.put(PropertyType.PRIMARYKEY, yamlDBProperty.get("PrimaryKey"));
-        } else {
-            throw new R2RMapperException("Property PrimaryKey is missing");
-        }
-
         if ( yamlDBProperty.get("Tables") != null) {
             List<String> tables = Lists.newArrayList(Splitter.on(",").trimResults().split(
                     (String) yamlDBProperty.get("Tables")));
             property.put(PropertyType.TABLES, (List<String>) tables);
         } else {
             throw new R2RMapperException("Property PrimaryKey is missing");
+        }
+
+        if ( yamlDBProperty.get("PrimaryKeys") != null) {
+            List<String> primaryKeys = Lists.newArrayList(Splitter.on(",").trimResults().split(
+                    (String) yamlDBProperty.get("PrimaryKeys")));
+            property.put(PropertyType.PRIMARYKEYS, (List<String>) primaryKeys);
+        } else {
+            throw new R2RMapperException("Property PrimaryKeys is missing");
         }
 
         return property;

@@ -64,7 +64,7 @@ public class RedisHandler {
         LOGGER.info("[RedisHandler] Connection established");
     }
 
-    public static void addClassMap(String key,String tableName, String className){
+    public static void addClassTable(String key,String tableName, String className){
         redis = pool.getResource();
 
         try {
@@ -82,6 +82,30 @@ public class RedisHandler {
             redis.hset(key,columnName,DataTypeProperty);
             LOGGER.info("[RedisHandler] New key/value pair added: " + key + " -> " + columnName);
             LOGGER.debug("[RedisHandler] key: " + key + " field: " + columnName + " value: " + DataTypeProperty);
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+    public static String getClassTableName(String key,String tableName){
+        redis = pool.getResource();
+
+        try {
+            String className = redis.hget(key,tableName);
+            LOGGER.debug("[RedisHandler] Value for key " + key + " retrieved: " + className);
+            return className;
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+    public static String getPropertyName(String key,String fieldName){
+        redis = pool.getResource();
+
+        try {
+            String propertyName = redis.hget(key,fieldName);
+            LOGGER.debug("[RedisHandler] Value for key " + key + " retrieved: " + propertyName);
+            return propertyName;
         } finally {
             pool.returnResource(redis);
         }

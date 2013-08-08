@@ -26,14 +26,13 @@ import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyType;
 public class BasicMapper {
 	
 	public static final Logger LOGGER=Logger.getLogger(BasicMapper.class);
-	
-	private String tableName;
+
+	private String tables;
 	private String prefix;
-	private String sqlStatement;
 	private String jdbcUrl;
 	private String dbUser;
 	private String dbPassword;
-	private String primaryKey;
+	private List<String> primaryKeys;
 	private Driver jdbcDriver; 
 	private RDFModelGenerator model = new RDFModelGenerator();
 	private List<Object> properties = new ArrayList<>();
@@ -46,28 +45,12 @@ public class BasicMapper {
 		this.setProperties(properties);  	
 	}
 	
-	public String getTableName() {
-		return tableName;
-	}
-
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-
 	public String getPrefix() {
 		return prefix;
 	}
 
   	public void setPrefix(String prefix) {
 		this.prefix = prefix;
-	}
-
-	public String getSqlStatement() {
-		return sqlStatement;
-	}
-
-	public void setSqlStatement(String sqlStatement) {
-		this.sqlStatement = sqlStatement;
 	}
 
 	public String getJdbcUrl() {
@@ -109,14 +92,6 @@ public class BasicMapper {
 	public void setProperties(List<Object> properties) {
 		this.properties = properties;
 	}
-	
-	public String getPrimaryKey() {
-		return primaryKey;
-	}
-
-	public void setPrimaryKey(String primaryKey) {
-		this.primaryKey = primaryKey;
-	}
 
 	/**
 	 * Extract data into new model.
@@ -130,8 +105,7 @@ public class BasicMapper {
 	@Deprecated
 	public void startSingleExtraction() 
 			throws R2RMapperException, SQLException, InstantiationException, IllegalAccessException, ClassNotFoundException{
-		if(tableName == null || prefix == null || sqlStatement == null 
-				|| jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null){
+		if(prefix == null || jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null){
 			throw new R2RMapperException("Not all mandatory parameters were provided");
 		}else{
 			LOGGER.info("[R2R Mapper] Extracting data from RDB");		
@@ -139,8 +113,8 @@ public class BasicMapper {
 			con.connect();
 			model = new RDFModelGenerator("localhost",prefix);
 			model.createModel(0);
-			model.newTableInstance(tableName);
-			con.loadModelFromDB(sqlStatement, model, "id");
+			//model.newTableInstance(tableName);
+			//con.loadModelFromDB(sqlStatement, model, "id");
 			
 		}
 	}
@@ -162,30 +136,22 @@ public class BasicMapper {
 		String name = (String) property.get(PropertyType.NAME);
 		String url = (String) property.get(PropertyType.URL);
 		String prefix = (String) property.get(PropertyType.PREFIX);
-		String tableName = (String) property.get(PropertyType.TABLENAME);
 		String jdbcUrl = (String) property.get(PropertyType.JDBCURL);
 		String dbUser = (String) property.get(PropertyType.USERNAME);
 		String dbPassword = (String) property.get(PropertyType.PASSWORD);
 		Driver jdbcDriver = Driver.getDriverByType((String) property.get(PropertyType.TYPE));
-		String sqlStatement = (String) property.get(PropertyType.QUERY);
-		String primaryKey = (String) property.get(PropertyType.PRIMARYKEY);
-		
-		if(tableName == null || prefix == null || sqlStatement == null 
-				|| jdbcDriver == null || dbUser == null || dbPassword == null || jdbcUrl == null || primaryKey == null){
+        List<String> primaryKeys = (List<String>) property.get(PropertyType.PRIMARYKEYS);
+        List<String> tables = (List<String>) property.get(PropertyType.TABLES);
+
+		if(tables == null || prefix == null || jdbcDriver == null ||
+                dbUser == null || dbPassword == null || jdbcUrl == null || primaryKeys == null){
 			throw new R2RMapperException("Not all mandatory parameters were provided");
 		}else{
 			LOGGER.info("[R2R Mapper] Extracting data from RDB for " + name);		
 			DBLoader con = new DBLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
 			con.connect();
-			model.setPrefix(prefix);
-			model.setBaseNamespace(url);
-			model.setSystemNamespace(model.getBaseNamespace() + prefix + "#");
-			model.addNsPrefix(prefix);
-			//model.newTableInstance(tableName);
-			//OntModel ontModel = model.getOntModel();
-			//ontModel.createClass("sak:RdbData");
-			con.loadModelFromDB(sqlStatement, model, primaryKey);
-			
+            model.generateCustomPrefix(prefix,url);
+			con.loadDataFromDB(prefix, tables, model, primaryKeys);
 		}
 		
 	}
@@ -217,7 +183,7 @@ public class BasicMapper {
         DBLoader con = new DBLoader(jdbcUrl, dbUser, dbPassword, jdbcDriver);
         con.connect();
         model.generateCustomPrefix(prefix,url);
-        con.loadStructureFromDB(name, tables, model);
+        con.loadStructureFromDB(prefix, tables, model);
 
     }
 	
@@ -277,6 +243,7 @@ public class BasicMapper {
 		
 		OntModel ont = model.createModel(reasoningLevel);
 		model.loadOwlModel(ont, pathToOntology, ontologyFormat);
+
 		for (Object data : this.properties) {
 			startMetadataExtraction(PropertyLoader.parseProperty(data));
 	    }

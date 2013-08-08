@@ -35,7 +35,8 @@ public class R2RMapper {
 		new JCommander(cls, args);
         PropertyLoader loader;
         BasicMapper bm;
-        String outputFileName = "integrated_ontology_phase_1.owl";
+        String outputFileNamePhase1 = "integrated_ontology_phase_1.owl";
+        String outputFileNamePhase2 = "integrated_ontology_phase_2.owl";
         String ontologyFormat = "RDF/XML";
 
         LOGGER.info("[R2R Mapper] Starting the application");
@@ -53,12 +54,14 @@ public class R2RMapper {
                     case "1":
                         RedisHandler.flushDB();
                         bm.createStructureMap();
-                        bm.printModelToFile(ontologyFormat,outputFileName);
-                        //bm.printModel(outputFormat);
+                        //bm.printModelToFile(ontologyFormat,outputFileNamePhase1);
+                        bm.printModel(ontologyFormat);
                         break;
                     case "2":
                         if(cls.pathToOntology != null){
                             bm.extractMetadata(1, cls.pathToOntology, ontologyFormat);    //reasoning with Pellet
+                            bm.printModelToFile(ontologyFormat,outputFileNamePhase2);
+                            //bm.printModel("TURTLE");
                         }else{
                             throw new R2RMapperException("For phase 2 ontology file is not defined");
                         }
