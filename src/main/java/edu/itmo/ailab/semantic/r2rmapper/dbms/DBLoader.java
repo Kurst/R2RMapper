@@ -128,7 +128,7 @@ public class DBLoader {
                     Individual i = model.addIndividual(tableName, resultSet.getString(pk),classTableName);
                     for (int col = 1; col <= metadata.getColumnCount(); ++col) {
                         model.addPropertyToIndividual(i, RedisHandler.getPropertyName(redisKey,metadata.getColumnName(col))
-                                ,resultSet.getString(col));
+                                ,resultSet.getString(col), metadata.getColumnTypeName(col));
                     }
                 }
 

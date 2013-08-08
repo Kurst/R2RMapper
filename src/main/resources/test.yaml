@@ -1,24 +1,22 @@
 ---
 Name: System 1
 Url: http://localhost/
-Prefix: sak
+Prefix: sys2
 Database:
-    JdbcUrl: jdbc:mysql://localhost/sakila
+    JdbcUrl: jdbc:mysql://localhost/r2r?zeroDateTimeBehavior=convertToNull
     Username: root
     Password: 
     Type: mysql
-    Query: SELECT * FROM film;
-    TableName: film
-    PrimaryKey: film_id
+    Tables: test, test2
+    PrimaryKeys: id, id
 ---
 Name: System 2
 Url: http://localhost/
-Prefix: sys2
+Prefix: sak
 Database:
-    JdbcUrl: jdbc:mysql://localhost/r2r
+    JdbcUrl: jdbc:mysql://localhost/sakila?zeroDateTimeBehavior=convertToNull
     Username: root
-    Password: 
+    Password:
     Type: mysql
-    Query: SELECT * FROM test;
-    TableName: test
-    PrimaryKey: id    
+    Tables: film
+    PrimaryKeys: film_id

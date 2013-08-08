@@ -54,8 +54,8 @@ public class R2RMapper {
                     case "1":
                         RedisHandler.flushDB();
                         bm.createStructureMap();
-                        //bm.printModelToFile(ontologyFormat,outputFileNamePhase1);
-                        bm.printModel(ontologyFormat);
+                        bm.printModelToFile(ontologyFormat,outputFileNamePhase1);
+                        //bm.printModel(ontologyFormat);
                         break;
                     case "2":
                         if(cls.pathToOntology != null){

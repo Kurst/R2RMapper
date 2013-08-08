@@ -7,6 +7,10 @@ import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDMapping;
 import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDType;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * R2R Mapper. It is a free software.
@@ -36,8 +40,18 @@ public class RDFUtils {
      * @param name
      * @param type
      */
-    public static Literal createLiteral(OntModel model, String name, String type) {
+    public static Literal createLiteral(OntModel model, String name, String type)
+            throws ParseException {
         XSDType xsdtype = XSDMapping.getXSDType(SQLDataType.getTypeFromString(type.toUpperCase()));
+        if(xsdtype == XSDType.DATETIME){
+           try{
+               Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse(name);
+               SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); //Converting to xsd timestamp format
+               name = df.format(date);
+           }catch(Exception e){
+               xsdtype = XSDType.STRING;
+           }
+        }
         Literal literal = model.createTypedLiteral(name,XSDType.XSD_NAMESPACE + xsdtype);
         return literal;
     }

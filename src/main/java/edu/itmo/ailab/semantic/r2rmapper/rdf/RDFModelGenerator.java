@@ -182,12 +182,12 @@ public class RDFModelGenerator{
 
      * @throws R2RMapperException
      */
-    public void addPropertyToIndividual(Individual individ, String propertyName, String propertyValue)
+    public void addPropertyToIndividual(Individual individ, String propertyName, String propertyValue, String propertyType)
             throws R2RMapperException {
         try{
             if(propertyValue != null){
                 DatatypeProperty property = ontModel.getDatatypeProperty(propertyName);
-                individ.addProperty(property, ontModel.createTypedLiteral(propertyValue));
+                individ.addProperty(property, RDFUtils.createLiteral(ontModel,propertyValue,propertyType));
             }
 
         }catch(Exception ex){
