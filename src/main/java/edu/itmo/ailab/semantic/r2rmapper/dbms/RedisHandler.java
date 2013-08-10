@@ -87,6 +87,16 @@ public class RedisHandler {
         }
     }
 
+    public static void addIndividualToStorage(String key,String individName, String value){
+        redis = pool.getResource();
+        try {
+            redis.hset(key,individName,value);
+            LOGGER.debug("[RedisHandler] Individual: " +  individName+ " was added to key: " + key);
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
     public static String getClassTableName(String key,String tableName){
         redis = pool.getResource();
 
@@ -106,6 +116,18 @@ public class RedisHandler {
             String propertyName = redis.hget(key,fieldName);
             LOGGER.debug("[RedisHandler] Value for key " + key + " retrieved: " + propertyName);
             return propertyName;
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+    public static Map<String, String> getAllIndividuals(String key){
+        redis = pool.getResource();
+
+        try {
+            Map<String, String> allIndividuals = redis.hgetAll(key);
+            LOGGER.debug("[RedisHandler] Get all values for key " + key);
+            return allIndividuals;
         } finally {
             pool.returnResource(redis);
         }

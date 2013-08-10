@@ -1,5 +1,6 @@
 package edu.itmo.ailab.semantic.r2rmapper.main;
 
+import edu.itmo.ailab.semantic.r2rmapper.comparator.IndividualsComparator;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.RedisHandler;
 import org.apache.log4j.Logger;
 
@@ -35,6 +36,7 @@ public class R2RMapper {
 		new JCommander(cls, args);
         PropertyLoader loader;
         BasicMapper bm;
+        IndividualsComparator ic;
         String outputFileNamePhase1 = "integrated_ontology_phase_1.owl";
         String outputFileNamePhase2 = "integrated_ontology_phase_2.owl";
         String ontologyFormat = "RDF/XML";
@@ -49,6 +51,7 @@ public class R2RMapper {
             RedisHandler.connect();
             loader = new PropertyLoader(cls.config);
             bm = new BasicMapper(loader.properties);
+            ic = new IndividualsComparator();
             try{
                 switch (cls.phase){
                     case "1":
@@ -61,7 +64,11 @@ public class R2RMapper {
                         if(cls.pathToOntology != null){
                             bm.extractMetadata(1, cls.pathToOntology, ontologyFormat);    //reasoning with Pellet
                             bm.printModelToFile(ontologyFormat,outputFileNamePhase2);
-                            //bm.printModel("TURTLE");
+                            bm.printModel("TURTLE");
+                            if(cls.compare){
+                               ic.startComparison(bm.getModel());
+                            }
+
                         }else{
                             throw new R2RMapperException("For phase 2 ontology file is not defined");
                         }

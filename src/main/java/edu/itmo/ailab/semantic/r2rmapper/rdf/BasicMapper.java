@@ -44,8 +44,12 @@ public class BasicMapper {
 	public BasicMapper(List<Object> properties){
 		this.setProperties(properties);  	
 	}
-	
-	public String getPrefix() {
+
+    public RDFModelGenerator getModel() {
+        return model;
+    }
+
+    public String getPrefix() {
 		return prefix;
 	}
 

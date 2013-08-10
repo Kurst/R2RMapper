@@ -29,5 +29,9 @@ public class CommandLine {
     @Parameter(names = {"--ontology"}, description = "Define path to settings")
     public String pathToOntology;
 
+    @Parameter(names = {"--compare"}, description = "Compare individuals")
+    public boolean compare = false;
+
+
 
 }

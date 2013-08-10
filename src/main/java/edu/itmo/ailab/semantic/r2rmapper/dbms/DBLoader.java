@@ -106,6 +106,7 @@ public class DBLoader {
         String query;
         String pk;
         String redisKey;
+        String redisIndividKey;
         String classTableName;
 
         for (String tableName : tables) {
@@ -126,6 +127,8 @@ public class DBLoader {
                 while (resultSet.next()) {
 
                     Individual i = model.addIndividual(tableName, resultSet.getString(pk),classTableName);
+                    redisIndividKey = prefix + "_" + tableName + "_individuals";
+                    RedisHandler.addIndividualToStorage(redisIndividKey,i.getURI(),resultSet.getString(pk));
                     for (int col = 1; col <= metadata.getColumnCount(); ++col) {
                         model.addPropertyToIndividual(i, RedisHandler.getPropertyName(redisKey,metadata.getColumnName(col))
                                 ,resultSet.getString(col), metadata.getColumnTypeName(col));
