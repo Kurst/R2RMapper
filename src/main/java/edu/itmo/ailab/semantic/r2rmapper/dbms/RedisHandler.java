@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -66,7 +67,6 @@ public class RedisHandler {
 
     public static void addClassTable(String key,String tableName, String className){
         redis = pool.getResource();
-
         try {
             redis.hset(key,tableName,className);
             LOGGER.info("[RedisHandler] New key/value pair added: " + key + " -> " + tableName);
@@ -128,6 +128,54 @@ public class RedisHandler {
             Map<String, String> allIndividuals = redis.hgetAll(key);
             LOGGER.debug("[RedisHandler] Get all values for key " + key);
             return allIndividuals;
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+    public static void addIndividualSimilarity(String key, String field, String value){
+        redis = pool.getResource();
+        redis.select(1); // Index 1 for Similarity
+        try {
+            redis.hset(key,field,value);
+            LOGGER.debug("[RedisHandler] Individual: " +  field + " similarity was added");
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+    public static HashSet<String> getAllSimilarIndividuals(){
+        redis = pool.getResource();
+        redis.select(1);
+        try {
+            HashSet<String> allIndividuals = (HashSet) redis.keys("*");
+            LOGGER.debug("[RedisHandler] Get all similar individuals");
+            return allIndividuals;
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+    public static Map<String, String> getSingleSimilarIndividual(String key){
+        redis = pool.getResource();
+        redis.select(1);
+        try {
+            Map<String, String> singleIndividuals = redis.hgetAll(key);
+            LOGGER.debug("[RedisHandler] Get all single individual for key " + key);
+            return singleIndividuals;
+        } finally {
+            pool.returnResource(redis);
+        }
+    }
+
+
+
+    public static void flushSimilarityDB(){
+        redis = pool.getResource();
+        redis.select(1);
+        try {
+            LOGGER.info("[RedisHandler] Cleaning Redis similarity dataset");
+            redis.flushDB();
         } finally {
             pool.returnResource(redis);
         }

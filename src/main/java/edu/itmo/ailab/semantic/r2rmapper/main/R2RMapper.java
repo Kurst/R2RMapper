@@ -63,11 +63,13 @@ public class R2RMapper {
                     case "2":
                         if(cls.pathToOntology != null){
                             bm.extractMetadata(1, cls.pathToOntology, ontologyFormat);    //reasoning with Pellet
-                            bm.printModelToFile(ontologyFormat,outputFileNamePhase2);
-                            bm.printModel("TURTLE");
+
+                            //bm.printModel("TURTLE");
                             if(cls.compare){
                                ic.startComparison(bm.getModel());
+                                //ic.provideSemanticProperties(bm.getModel().getOntModel());
                             }
+                            bm.printModelToFile(ontologyFormat,outputFileNamePhase2);
 
                         }else{
                             throw new R2RMapperException("For phase 2 ontology file is not defined");
