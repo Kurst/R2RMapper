@@ -1,7 +1,9 @@
 package edu.itmo.ailab.semantic.r2rmapper.comparator;
 
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.OWL;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.RedisHandler;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 import org.apache.log4j.Logger;
@@ -35,9 +37,10 @@ public class IndividualsComparator {
         String key2 = table2 + "_individuals";
         Map<String,String> allIndividualsForKey1 = RedisHandler.getAllIndividuals(key1);
         Map<String,String> allIndividualsForKey2 = RedisHandler.getAllIndividuals(key2);
-        String prop1 = RedisHandler.getPropertyName(table1,field1);
+        String prop1 = RedisHandler.getPropertyName(table1, field1);
         String prop2 = RedisHandler.getPropertyName(table2, field2);
         OntModel ontModel = model.getOntModel();
+        Boolean similarityFlag = false;
 
         for (Entry<String, String> entry : allIndividualsForKey1.entrySet())
         {
@@ -54,11 +57,28 @@ public class IndividualsComparator {
                     String val2 = st2.getLiteral().getLexicalForm().toString();
                     if(val1.length() >= 20 || val2.length() >= 20){
                         int k = DamerauLevenshtein.computeSimilarity(val1,val2); // for big strings
-                        LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k);
+                        if(k <= 15){
+                            similarityFlag = true;
+                        }else{
+                            similarityFlag = false;
+                        }
+                        LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k+ " Similar?: " + similarityFlag);
                     }else{
                         float k = Tanimoto.computeSimilarity(val1, val2); //for short strings
-                       LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k);
+                        if(k > 0.75 && k <= 1.0){
+                            similarityFlag = true;
+                        }else{
+                            similarityFlag = false;
+                        }
+                        LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k + " Similar?: " + similarityFlag);
                     }
+                }
+
+                if(similarityFlag){
+                    Individual individual1 =  ontModel.getIndividual(entry.getKey());
+                    Individual individual2 =  ontModel.getIndividual(entry2.getKey());
+                    individual1.addProperty(OWL.sameAs,individual2);
+                    individual2.addProperty(OWL.sameAs,individual1);
                 }
 
             }
