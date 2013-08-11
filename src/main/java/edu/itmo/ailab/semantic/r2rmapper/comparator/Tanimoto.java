@@ -2,11 +2,6 @@ package edu.itmo.ailab.semantic.r2rmapper.comparator;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-
 /**
  * R2R Mapper. It is a free software.
  *
