@@ -31,7 +31,7 @@ public class Tanimoto {
                 }
             }
         }
-        res = (float) c / (a + b - c);
+        res = (float) c / ((float) a + (float) b - (float) c);
         return res;
     }
 }
