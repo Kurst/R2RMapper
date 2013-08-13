@@ -186,7 +186,7 @@ public class RDFModelGenerator{
             throws R2RMapperException {
         try{
             if(propertyValue != null){
-                DatatypeProperty property = ontModel.getDatatypeProperty(propertyName);
+                DatatypeProperty property = RDFUtils.getDatatypeProperty(ontModel, propertyName);
                 individ.addProperty(property, RDFUtils.createLiteral(ontModel,propertyValue,propertyType));
             }
 
@@ -265,7 +265,7 @@ public class RDFModelGenerator{
             resource = ontModel.createResource(prefix + ":"+table+"_PK_" + subj);
             //object = ontModel.createResource( systemNamespace + "TBL" + table);
             //resource.addProperty(RDFS.subClassOf, object);
-            //Property property = ontModel.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+            //Property property = ontModel.getDatatypeProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
             //object = ontModel.createResource("sak:Import");
             //ontModel.add(resource, property, object);
             //TODO:Fix this

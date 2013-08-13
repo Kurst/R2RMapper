@@ -1,7 +1,11 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
+import com.hp.hpl.jena.ontology.DatatypeProperty;
+import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Literal;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Statement;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.SQLDataType;
 import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDMapping;
 import edu.itmo.ailab.semantic.r2rmapper.xsd.XSDType;
@@ -54,6 +58,64 @@ public class RDFUtils {
         }
         Literal literal = model.createTypedLiteral(name,XSDType.XSD_NAMESPACE + xsdtype);
         return literal;
+    }
+
+    /**
+     * Create Datatype Property from short name or long name
+     *
+     * @param ontModel
+     * @param propertyShortName
+     *
+     */
+    public static DatatypeProperty getDatatypeProperty(OntModel ontModel, String propertyShortName){
+        DatatypeProperty property;
+        property = ontModel.getDatatypeProperty(propertyShortName);
+        if(property == null){
+            String nsPrefix = propertyShortName.substring(0,propertyShortName.indexOf(":"));
+            String instanceName = propertyShortName.substring(propertyShortName.indexOf(":")+1);
+            String propertyLongName = ontModel.getNsPrefixURI(nsPrefix) + instanceName;
+            property = ontModel.getDatatypeProperty(propertyLongName);
+        }
+        return property;
+    }
+
+    /**
+     * Create Property from short name or long name
+     *
+     * @param ontModel
+     * @param propertyShortName
+     *
+     */
+    public static Property getProperty(OntModel ontModel, String propertyShortName){
+        Property property;
+        property = ontModel.getProperty(propertyShortName);
+        if(property == null){
+            String nsPrefix = propertyShortName.substring(0,propertyShortName.indexOf(":"));
+            String instanceName = propertyShortName.substring(propertyShortName.indexOf(":")+1);
+            String propertyLongName = ontModel.getNsPrefixURI(nsPrefix) + instanceName;
+            property = ontModel.getProperty(propertyLongName);
+        }
+        return property;
+    }
+
+    /**
+     * Create Statement from short name or long name
+     *
+     * @param ontModel
+     * @param propertyShortName
+     *
+     */
+    public static Statement getStatement(OntModel ontModel, Individual i, String propertyShortName){
+        Property property = getProperty(ontModel,propertyShortName);
+        Statement statement;
+        statement = i.getProperty(property);
+        if(statement == null){
+            String nsPrefix = propertyShortName.substring(0,propertyShortName.indexOf(":"));
+            String instanceName = propertyShortName.substring(propertyShortName.indexOf(":")+1);
+            String propertyLongName = ontModel.getNsPrefixURI(nsPrefix) + instanceName;
+            statement = i.getProperty(ontModel.getProperty(propertyLongName));
+        }
+        return statement;
     }
 
     /**

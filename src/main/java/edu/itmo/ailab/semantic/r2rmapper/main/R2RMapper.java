@@ -67,6 +67,7 @@ public class R2RMapper {
                             //bm.printModel("TURTLE");
                             if(cls.compare){
                                ic.startComparison(bm.getModel());
+                                //ic.analyzeStructure(bm.getModel().getOntModel());
                             }
                             bm.printModelToFile(ontologyFormat,outputFileNamePhase2);
 

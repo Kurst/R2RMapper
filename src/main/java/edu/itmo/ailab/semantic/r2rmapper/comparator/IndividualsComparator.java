@@ -5,6 +5,7 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Statement;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
+import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFUtils;
 import edu.itmo.ailab.semantic.r2rmapper.vocabulary.SKOS;
 import org.apache.log4j.Logger;
 
@@ -55,14 +56,12 @@ public class IndividualsComparator {
         Statement st2;
         MatchingDBHandler.flushSimilarityDB();
         for (String entry1 : allIndividualsForKey1.keySet()) {
-            st1 = ontModel.getIndividual(entry1)
-                    .getProperty(ontModel.getProperty(prop1));
+            st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),prop1);
             for (String entry2 : allIndividualsForKey2.keySet()) {
                 LOGGER.debug("[Comparator] Compare " + entry1 + " vs " + entry2);
                 similarityLevel = "0";
                 ngramSize = 2;
-                st2 = ontModel.getIndividual(entry2)
-                        .getProperty(ontModel.getProperty(prop2));
+                st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),prop2);
 
                 if (st1.getObject().isLiteral() && st2.getObject().isLiteral()) {
                     String val1 = st1.getLiteral().getLexicalForm().toString();
@@ -129,6 +128,13 @@ public class IndividualsComparator {
             }
 
         }
+
+    }
+
+    public void analyzeStructure(OntModel ontModel) {
+
+       //ontModel.listObjectsOfProperty(ontModel.getProperty("owl:equivalentProperty"));
+      // System.out.println("asd");
 
     }
 
