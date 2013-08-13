@@ -54,7 +54,6 @@ public class IndividualsComparator {
         Statement st1;
         Statement st2;
         MatchingDBHandler.flushSimilarityDB();
-
         for (String entry1 : allIndividualsForKey1.keySet()) {
             st1 = ontModel.getIndividual(entry1)
                     .getProperty(ontModel.getProperty(prop1));
