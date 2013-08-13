@@ -1,7 +1,7 @@
 package edu.itmo.ailab.semantic.r2rmapper.main;
 
 import edu.itmo.ailab.semantic.r2rmapper.comparator.IndividualsComparator;
-import edu.itmo.ailab.semantic.r2rmapper.dbms.RedisHandler;
+import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
 import org.apache.log4j.Logger;
 
 import com.beust.jcommander.JCommander;
@@ -44,18 +44,18 @@ public class R2RMapper {
         LOGGER.info("[R2R Mapper] Starting the application");
 		try {
             if(cls.settings == null){
-                RedisHandler.getInstance("src/main/resources/settings.yaml");
+                MatchingDBHandler.getInstance("src/main/resources/settings.yaml");
             }else{
-                RedisHandler.getInstance(cls.settings);
+                MatchingDBHandler.getInstance(cls.settings);
             }
-            RedisHandler.connect();
+            MatchingDBHandler.connect();
             loader = new PropertyLoader(cls.config);
             bm = new BasicMapper(loader.properties);
             ic = new IndividualsComparator();
             try{
                 switch (cls.phase){
                     case "1":
-                        RedisHandler.flushDB();
+                        MatchingDBHandler.flushDB();
                         bm.createStructureMap();
                         bm.printModelToFile(ontologyFormat,outputFileNamePhase1);
                         //bm.printModel(ontologyFormat);
@@ -85,7 +85,7 @@ public class R2RMapper {
             throw new R2RMapperException("Initialization failed",ex);
         }
 
-        RedisHandler.saveDatasetToDisk();
+        MatchingDBHandler.saveDatasetToDisk();
 	}
 
 }

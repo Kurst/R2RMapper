@@ -3,7 +3,7 @@ package edu.itmo.ailab.semantic.r2rmapper.comparator;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.Statement;
-import edu.itmo.ailab.semantic.r2rmapper.dbms.RedisHandler;
+import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 import edu.itmo.ailab.semantic.r2rmapper.vocabulary.SKOS;
 import org.apache.log4j.Logger;
@@ -44,16 +44,16 @@ public class IndividualsComparator {
         String field2 = "name";
         String key1 = table1 + "_individuals";
         String key2 = table2 + "_individuals";
-        Map<String, String> allIndividualsForKey1 = RedisHandler.getAllIndividuals(key1);
-        Map<String, String> allIndividualsForKey2 = RedisHandler.getAllIndividuals(key2);
-        String prop1 = RedisHandler.getPropertyName(table1, field1);
-        String prop2 = RedisHandler.getPropertyName(table2, field2);
+        Map<String, String> allIndividualsForKey1 = MatchingDBHandler.getAllIndividuals(key1);
+        Map<String, String> allIndividualsForKey2 = MatchingDBHandler.getAllIndividuals(key2);
+        String prop1 = MatchingDBHandler.getPropertyName(table1, field1);
+        String prop2 = MatchingDBHandler.getPropertyName(table2, field2);
         OntModel ontModel = model.getOntModel();
         String similarityLevel = "0";
         int ngramSize = 2;
         Statement st1;
         Statement st2;
-        RedisHandler.flushSimilarityDB();
+        MatchingDBHandler.flushSimilarityDB();
 
         for (String entry1 : allIndividualsForKey1.keySet()) {
             st1 = ontModel.getIndividual(entry1)
@@ -91,7 +91,7 @@ public class IndividualsComparator {
 
                 }
                 if (Integer.parseInt(similarityLevel) > 0) {
-                    RedisHandler.addIndividualSimilarity(entry1, entry2, similarityLevel);
+                    MatchingDBHandler.addIndividualSimilarity(entry1, entry2, similarityLevel);
                 }
 
             }
@@ -102,7 +102,7 @@ public class IndividualsComparator {
 
     private void provideSemanticProperties(OntModel ontModel) {
 
-        HashSet<String> keys = RedisHandler.getAllSimilarIndividuals();
+        HashSet<String> keys = MatchingDBHandler.getAllSimilarIndividuals();
         Map<String, String> singleSimilarIndividualMap;
         Individual individual1;
         Individual individual2;
@@ -110,7 +110,7 @@ public class IndividualsComparator {
         for (String key : keys) {
             i++;
             System.out.println(i);
-            singleSimilarIndividualMap = RedisHandler.getSingleSimilarIndividual(key);
+            singleSimilarIndividualMap = MatchingDBHandler.getSingleSimilarIndividual(key);
             for (Entry<String, String> singleSimilarIndividual : singleSimilarIndividualMap.entrySet()) {
                 individual1 = ontModel.getIndividual(key);
                 individual2 = ontModel.getIndividual(singleSimilarIndividual.getKey());

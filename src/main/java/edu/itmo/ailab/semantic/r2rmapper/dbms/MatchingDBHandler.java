@@ -20,26 +20,26 @@ import java.util.Map;
  * Author: Ilya Semerhanov
  * Date: 07.08.13
  */
-public class RedisHandler {
+public class MatchingDBHandler {
 
-    public static final Logger LOGGER = Logger.getLogger(RedisHandler.class);
+    public static final Logger LOGGER = Logger.getLogger(MatchingDBHandler.class);
 
-    private static volatile RedisHandler instance;
+    private static volatile MatchingDBHandler instance;
     public static String settings;
     private static JedisPool pool;
     private static Jedis redis;
 
-    private RedisHandler(){
+    private MatchingDBHandler(){
 
     }
 
-    public static RedisHandler getInstance(String filePath) {
-        RedisHandler localInstance = instance;
+    public static MatchingDBHandler getInstance(String filePath) {
+        MatchingDBHandler localInstance = instance;
         if (localInstance == null) {
-            synchronized (RedisHandler.class) {
+            synchronized (MatchingDBHandler.class) {
                 localInstance = instance;
                 if (localInstance == null) {
-                    instance = localInstance = new RedisHandler();
+                    instance = localInstance = new MatchingDBHandler();
                     settings = filePath;
                 }
             }
@@ -51,26 +51,26 @@ public class RedisHandler {
             throws FileNotFoundException {
         InputStream input = new FileInputStream(new File(settings));
         Yaml yaml = new Yaml();
-        LOGGER.info("[RedisHandler] Loading Redis settings: " + settings);
+        LOGGER.info("[MatchingDBHandler] Loading Redis settings: " + settings);
 
         Map allSettings = (Map) yaml.load(input);
         Map redisSettings = (Map) allSettings.get("RedisServer");
         String hostname = redisSettings.get("hostname").toString();
         Integer port = (Integer) redisSettings.get("port");
 
-        LOGGER.info("[RedisHandler] Connecting to Redis server " + hostname + ":" + port.toString());
+        LOGGER.info("[MatchingDBHandler] Connecting to Redis server " + hostname + ":" + port.toString());
         pool = new JedisPool(new JedisPoolConfig(), hostname, port);
         redis = pool.getResource();
         pool.returnResource(redis);
-        LOGGER.info("[RedisHandler] Connection established");
+        LOGGER.info("[MatchingDBHandler] Connection established");
     }
 
     public static void addClassTable(String key,String tableName, String className){
         redis = pool.getResource();
         try {
             redis.hset(key,tableName,className);
-            LOGGER.info("[RedisHandler] New key/value pair added: " + key + " -> " + tableName);
-            LOGGER.debug("[RedisHandler] key: " + key + " field: " + tableName + " value: " + className);
+            LOGGER.info("[MatchingDBHandler] New key/value pair added: " + key + " -> " + tableName);
+            LOGGER.debug("[MatchingDBHandler] key: " + key + " field: " + tableName + " value: " + className);
         } finally {
             pool.returnResource(redis);
         }
@@ -80,8 +80,8 @@ public class RedisHandler {
         redis = pool.getResource();
         try {
             redis.hset(key,columnName,DataTypeProperty);
-            LOGGER.info("[RedisHandler] New key/value pair added: " + key + " -> " + columnName);
-            LOGGER.debug("[RedisHandler] key: " + key + " field: " + columnName + " value: " + DataTypeProperty);
+            LOGGER.info("[MatchingDBHandler] New key/value pair added: " + key + " -> " + columnName);
+            LOGGER.debug("[MatchingDBHandler] key: " + key + " field: " + columnName + " value: " + DataTypeProperty);
         } finally {
             pool.returnResource(redis);
         }
@@ -91,7 +91,7 @@ public class RedisHandler {
         redis = pool.getResource();
         try {
             redis.hset(key,individName,value);
-            LOGGER.debug("[RedisHandler] Individual: " +  individName+ " was added to key: " + key);
+            LOGGER.debug("[MatchingDBHandler] Individual: " +  individName+ " was added to key: " + key);
         } finally {
             pool.returnResource(redis);
         }
@@ -102,7 +102,7 @@ public class RedisHandler {
 
         try {
             String className = redis.hget(key,tableName);
-            LOGGER.debug("[RedisHandler] Value for key " + key + " retrieved: " + className);
+            LOGGER.debug("[MatchingDBHandler] Value for key " + key + " retrieved: " + className);
             return className;
         } finally {
             pool.returnResource(redis);
@@ -114,7 +114,7 @@ public class RedisHandler {
 
         try {
             String propertyName = redis.hget(key,fieldName);
-            LOGGER.debug("[RedisHandler] Value for key " + key + " retrieved: " + propertyName);
+            LOGGER.debug("[MatchingDBHandler] Value for key " + key + " retrieved: " + propertyName);
             return propertyName;
         } finally {
             pool.returnResource(redis);
@@ -126,7 +126,7 @@ public class RedisHandler {
 
         try {
             Map<String, String> allIndividuals = redis.hgetAll(key);
-            LOGGER.debug("[RedisHandler] Get all values for key " + key);
+            LOGGER.debug("[MatchingDBHandler] Get all values for key " + key);
             return allIndividuals;
         } finally {
             pool.returnResource(redis);
@@ -138,7 +138,7 @@ public class RedisHandler {
         redis.select(1); // Index 1 for Similarity
         try {
             redis.hset(key,field,value);
-            LOGGER.debug("[RedisHandler] Individual: " +  field + " similarity was added");
+            LOGGER.debug("[MatchingDBHandler] Individual: " +  field + " similarity was added");
         } finally {
             pool.returnResource(redis);
         }
@@ -149,7 +149,7 @@ public class RedisHandler {
         redis.select(1);
         try {
             HashSet<String> allIndividuals = (HashSet) redis.keys("*");
-            LOGGER.debug("[RedisHandler] Get all similar individuals");
+            LOGGER.debug("[MatchingDBHandler] Get all similar individuals");
             return allIndividuals;
         } finally {
             pool.returnResource(redis);
@@ -161,7 +161,7 @@ public class RedisHandler {
         redis.select(1);
         try {
             Map<String, String> singleIndividuals = redis.hgetAll(key);
-            LOGGER.debug("[RedisHandler] Get all single individual for key " + key);
+            LOGGER.debug("[MatchingDBHandler] Get all single individual for key " + key);
             return singleIndividuals;
         } finally {
             pool.returnResource(redis);
@@ -174,7 +174,7 @@ public class RedisHandler {
         redis = pool.getResource();
         redis.select(1);
         try {
-            LOGGER.info("[RedisHandler] Cleaning Redis similarity dataset");
+            LOGGER.info("[MatchingDBHandler] Cleaning Redis similarity dataset");
             redis.flushDB();
         } finally {
             pool.returnResource(redis);
@@ -185,7 +185,7 @@ public class RedisHandler {
         redis = pool.getResource();
         try {
             redis.save();
-            LOGGER.info("[RedisHandler] Redis dataset was saved to disk");
+            LOGGER.info("[MatchingDBHandler] Redis dataset was saved to disk");
         } finally {
             pool.returnResource(redis);
         }
@@ -193,7 +193,7 @@ public class RedisHandler {
     public static void flushDB(){
         redis = pool.getResource();
         try {
-            LOGGER.info("[RedisHandler] Cleaning Redis dataset");
+            LOGGER.info("[MatchingDBHandler] Cleaning Redis dataset");
             redis.flushDB();
         } finally {
             pool.returnResource(redis);

@@ -123,14 +123,14 @@ public class DBLoader {
                 }catch (IndexOutOfBoundsException e){
                     throw new R2RMapperException("Number of tables is not equal to number of primary keys", e);
                 }
-                classTableName = RedisHandler.getClassTableName(redisKey,tableName);
+                classTableName = MatchingDBHandler.getClassTableName(redisKey, tableName);
                 while (resultSet.next()) {
 
                     Individual i = model.addIndividual(tableName, resultSet.getString(pk),classTableName);
                     redisIndividKey = prefix + "_" + tableName + "_individuals";
-                    RedisHandler.addIndividualToStorage(redisIndividKey,i.getURI(),resultSet.getString(pk));
+                    MatchingDBHandler.addIndividualToStorage(redisIndividKey, i.getURI(), resultSet.getString(pk));
                     for (int col = 1; col <= metadata.getColumnCount(); ++col) {
-                        model.addPropertyToIndividual(i, RedisHandler.getPropertyName(redisKey,metadata.getColumnName(col))
+                        model.addPropertyToIndividual(i, MatchingDBHandler.getPropertyName(redisKey, metadata.getColumnName(col))
                                 ,resultSet.getString(col), metadata.getColumnTypeName(col));
                     }
                 }
@@ -182,11 +182,11 @@ public class DBLoader {
                 metadata = (ResultSetMetaData) resultSet.getMetaData();
                 classMap = model.addTableClassInstance(tableName);
                 redisKey = (prefix + "_" + tableName).replaceAll(" ", "_");
-                RedisHandler.addClassTable(redisKey,tableName,classMap.getURI());
+                MatchingDBHandler.addClassTable(redisKey, tableName, classMap.getURI());
                 for (int col = 1; col <= metadata.getColumnCount(); ++col) {
                     dataTypeProperty = model.addDatatypeProperty(metadata.getColumnName(col),
                             metadata.getColumnTypeName(col), classMap, tableName);
-                    RedisHandler.addDataTypeProperty(redisKey,metadata.getColumnName(col),dataTypeProperty.getURI());
+                    MatchingDBHandler.addDataTypeProperty(redisKey, metadata.getColumnName(col), dataTypeProperty.getURI());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
