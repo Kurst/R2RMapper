@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * R2R Mapper. It is a free software
@@ -74,7 +75,7 @@ public class SorensenDice
 
     private List<result> processString(String c, int n)
     {
-        List<result> t = new ArrayList<result>();
+        List<result> t = new ArrayList();
 
         String spacer = "";
         for (int i = 0; i < n-1; i++)
