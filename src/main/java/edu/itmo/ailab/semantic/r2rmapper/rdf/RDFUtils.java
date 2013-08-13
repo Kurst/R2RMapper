@@ -15,6 +15,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * R2R Mapper. It is a free software.
@@ -106,7 +108,7 @@ public class RDFUtils {
      *
      */
     public static Statement getStatement(OntModel ontModel, Individual i, String propertyShortName){
-        Property property = getProperty(ontModel,propertyShortName);
+        Property property = getProperty(ontModel, propertyShortName);
         Statement statement;
         statement = i.getProperty(property);
         if(statement == null){
@@ -117,6 +119,35 @@ public class RDFUtils {
         }
         return statement;
     }
+
+    /**
+     * Parse CallName from URI
+     *
+     * @param className
+     */
+    public static String parseClassTableNameFromURI(String className){
+        String res = null;
+        Pattern regex = Pattern.compile("^([^http:].*):(.*)$");
+        Matcher m = regex.matcher(className);
+        if(m.matches()){
+            if (m.find()) {
+                String systemName = m.group(1);
+                String tableName = m.group(2);
+                res = systemName + "_" + tableName;
+            }
+        }else{
+            Pattern regex2 = Pattern.compile("^(.*)#(.*)$");
+            String name = className.substring(className.lastIndexOf("/")+1);
+            Matcher m2 = regex2.matcher(name);
+            if (m2.find()) {
+                String systemName = m2.group(1);
+                String tableName = m2.group(2);
+                res = systemName + "_" + tableName;
+            }
+        }
+        return res;
+    }
+
 
     /**
      * Transform file encoding

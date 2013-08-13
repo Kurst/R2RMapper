@@ -7,6 +7,7 @@ import java.lang.*;
 
 import com.hp.hpl.jena.ontology.*;
 import com.hp.hpl.jena.rdf.model.*;
+import edu.itmo.ailab.semantic.r2rmapper.vocabulary.R2R;
 import org.apache.log4j.Logger;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
@@ -147,6 +148,10 @@ public class RDFModelGenerator{
             resource.addProperty(RDF.type, OWL.DatatypeProperty);
             resource.addProperty(RDFS.domain, table);
             resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,columnName,columnType));
+            //tmp
+            ontModel.setNsPrefix(R2R.prefix,R2R.NS);
+            ontModel.createAnnotationProperty(RDFUtils.createURI(R2R.prefix,R2R.hasSimilairtyName))
+                    .addProperty(RDFS.label,R2R.hasSimilairtyName);
             return resource;
         }catch(Exception ex){
             throw new R2RMapperException("[RDF Model Generator] New DataTypeProperty creation failed", ex);

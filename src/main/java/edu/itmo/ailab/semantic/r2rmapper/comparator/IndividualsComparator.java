@@ -2,10 +2,12 @@ package edu.itmo.ailab.semantic.r2rmapper.comparator;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFUtils;
+import edu.itmo.ailab.semantic.r2rmapper.vocabulary.R2R;
 import edu.itmo.ailab.semantic.r2rmapper.vocabulary.SKOS;
 import org.apache.log4j.Logger;
 
@@ -16,7 +18,7 @@ import java.util.Map.Entry;
 
 /**
  * R2R Mapper. It is a free software.
- * <p/>
+ *
  * Similarity levels:
  * 0 - not similar
  * 1 - narrow match
@@ -29,27 +31,35 @@ public class IndividualsComparator {
 
     public static final Logger LOGGER = Logger.getLogger(IndividualsComparator.class);
 
-    public String filePath;
-
     public IndividualsComparator() {
 
     }
 
-    public void startComparison(RDFModelGenerator model) {
+    public void analyzeSimilarity(OntModel ontModel) {
+        ResIterator ri = ontModel.listSubjectsWithProperty(R2R.hasSimilarity);
+        while(ri.hasNext()){
+            Resource subjectWithProperty = ri.next();
+            Resource className = subjectWithProperty.getPropertyResourceValue(RDFS.domain);
+            Resource similarSubjectWithProperty = subjectWithProperty.getPropertyResourceValue(R2R.hasSimilarity);
+            Resource similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
+            startComparison(ontModel,className.getURI(),similarClassName.getURI(),subjectWithProperty.getURI(),similarSubjectWithProperty.getURI());
+        }
+    }
 
-        String table1 = "sys2_test";
-        String table2 = "sys2_test2";
+    private void startComparison(OntModel ontModel, String className1, String className2, String prop1, String prop2) {
+
         /*String table1 = "sak_film";
         String table2 = "sak_film";*/
-        String field1 = "name";
-        String field2 = "name";
+        //String field1 = "name";
+        //String field2 = "name";
+
+        String table1 = RDFUtils.parseClassTableNameFromURI(className1);
+        String table2 = RDFUtils.parseClassTableNameFromURI(className2);
         String key1 = table1 + "_individuals";
         String key2 = table2 + "_individuals";
         Map<String, String> allIndividualsForKey1 = MatchingDBHandler.getAllIndividuals(key1);
         Map<String, String> allIndividualsForKey2 = MatchingDBHandler.getAllIndividuals(key2);
-        String prop1 = MatchingDBHandler.getPropertyName(table1, field1);
-        String prop2 = MatchingDBHandler.getPropertyName(table2, field2);
-        OntModel ontModel = model.getOntModel();
+
         String similarityLevel = "0";
         int ngramSize = 2;
         Statement st1;
@@ -130,13 +140,5 @@ public class IndividualsComparator {
         }
 
     }
-
-    public void analyzeStructure(OntModel ontModel) {
-
-       //ontModel.listObjectsOfProperty(ontModel.getProperty("owl:equivalentProperty"));
-      // System.out.println("asd");
-
-    }
-
 
 }
