@@ -36,14 +36,20 @@ public class IndividualsComparator {
     }
 
     public void analyzeSimilarity(OntModel ontModel) {
-        ResIterator ri = ontModel.listSubjectsWithProperty(R2R.hasSimilarity);
-        while(ri.hasNext()){
-            Resource subjectWithProperty = ri.next();
-            Resource className = subjectWithProperty.getPropertyResourceValue(RDFS.domain);
-            Resource similarSubjectWithProperty = subjectWithProperty.getPropertyResourceValue(R2R.hasSimilarity);
-            Resource similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
-            startComparison(ontModel,className.getURI(),similarClassName.getURI(),subjectWithProperty.getURI(),similarSubjectWithProperty.getURI());
+
+        try {
+            ResIterator ri = ontModel.listSubjectsWithProperty(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+            while(ri.hasNext()){
+                Resource subjectWithProperty = ri.next();
+                Resource className = subjectWithProperty.getPropertyResourceValue(RDFS.domain);
+                Resource similarSubjectWithProperty = subjectWithProperty.getPropertyResourceValue(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+                Resource similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
+                startComparison(ontModel,className.getURI(),similarClassName.getURI(),subjectWithProperty.getURI(),similarSubjectWithProperty.getURI());
+            }
+        }catch(NullPointerException e){
+            LOGGER.error("[Comparator] similarTo AnnotationProperty was not found. Comparison failed.");
         }
+
     }
 
     private void startComparison(OntModel ontModel, String className1, String className2, String prop1, String prop2) {

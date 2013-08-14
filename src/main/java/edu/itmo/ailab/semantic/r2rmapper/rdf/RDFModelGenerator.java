@@ -150,8 +150,8 @@ public class RDFModelGenerator{
             resource.addProperty(RDFS.label, RDFUtils.createLiteral(ontModel,columnName,columnType));
             //tmp
             ontModel.setNsPrefix(R2R.prefix,R2R.NS);
-            ontModel.createAnnotationProperty(RDFUtils.createURI(R2R.prefix,R2R.hasSimilairtyName))
-                    .addProperty(RDFS.label,R2R.hasSimilairtyName);
+            ontModel.createAnnotationProperty(RDFUtils.createURI(R2R.prefix,R2R.similarToName))
+                    .addProperty(RDFS.label,R2R.similarToName);
             return resource;
         }catch(Exception ex){
             throw new R2RMapperException("[RDF Model Generator] New DataTypeProperty creation failed", ex);

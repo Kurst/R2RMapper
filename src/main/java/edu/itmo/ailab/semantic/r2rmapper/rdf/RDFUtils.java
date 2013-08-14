@@ -1,5 +1,6 @@
 package edu.itmo.ailab.semantic.r2rmapper.rdf;
 
+import com.hp.hpl.jena.ontology.AnnotationProperty;
 import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -101,6 +102,25 @@ public class RDFUtils {
     }
 
     /**
+     * Get Annotation Property from short name or long name
+     *
+     * @param ontModel
+     * @param propertyShortName
+     *
+     */
+    public static AnnotationProperty getAnnotationProperty(OntModel ontModel, String propertyShortName){
+        AnnotationProperty property;
+        property = ontModel.getAnnotationProperty(propertyShortName);
+        if(property == null){
+            String nsPrefix = propertyShortName.substring(0,propertyShortName.indexOf(":"));
+            String instanceName = propertyShortName.substring(propertyShortName.indexOf(":")+1);
+            String propertyLongName = ontModel.getNsPrefixURI(nsPrefix) + instanceName;
+            property = ontModel.getAnnotationProperty(propertyLongName);
+        }
+        return property;
+    }
+
+    /**
      * Create Statement from short name or long name
      *
      * @param ontModel
@@ -127,14 +147,12 @@ public class RDFUtils {
      */
     public static String parseClassTableNameFromURI(String className){
         String res = null;
-        Pattern regex = Pattern.compile("^([^http:].*):(.*)$");
+        Pattern regex = Pattern.compile("([^http:].*):(.*)");
         Matcher m = regex.matcher(className);
         if(m.matches()){
-            if (m.find()) {
-                String systemName = m.group(1);
-                String tableName = m.group(2);
-                res = systemName + "_" + tableName;
-            }
+            String systemName = m.group(1);
+            String tableName = m.group(2);
+            res = systemName + "_" + tableName;
         }else{
             Pattern regex2 = Pattern.compile("^(.*)#(.*)$");
             String name = className.substring(className.lastIndexOf("/")+1);
