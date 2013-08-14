@@ -58,59 +58,63 @@ public class IndividualsComparator {
         String table2 = "sak_film";*/
         //String field1 = "name";
         //String field2 = "name";
+        try{
+            String table1 = RDFUtils.parseClassTableNameFromURI(className1);
+            String table2 = RDFUtils.parseClassTableNameFromURI(className2);
+            String key1 = table1 + "_individuals";
+            String key2 = table2 + "_individuals";
+            Map<String, String> allIndividualsForKey1 = MatchingDBHandler.getAllIndividuals(key1);
+            Map<String, String> allIndividualsForKey2 = MatchingDBHandler.getAllIndividuals(key2);
+            String similarityLevel = "0";
+            int ngramSize = 2;
+            Statement st1;
+            Statement st2;
+            MatchingDBHandler.flushSimilarityDB();
+            for (String entry1 : allIndividualsForKey1.keySet()) {
+                st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),prop1);
+                for (String entry2 : allIndividualsForKey2.keySet()) {
+                    LOGGER.debug("[Comparator] Compare " + entry1 + " vs " + entry2);
+                    similarityLevel = "0";
+                    ngramSize = 2;
+                    st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),prop2);
 
-        String table1 = RDFUtils.parseClassTableNameFromURI(className1);
-        String table2 = RDFUtils.parseClassTableNameFromURI(className2);
-        String key1 = table1 + "_individuals";
-        String key2 = table2 + "_individuals";
-        Map<String, String> allIndividualsForKey1 = MatchingDBHandler.getAllIndividuals(key1);
-        Map<String, String> allIndividualsForKey2 = MatchingDBHandler.getAllIndividuals(key2);
+                    if (st1.getObject().isLiteral() && st2.getObject().isLiteral()) {
+                        String val1 = st1.getLiteral().getLexicalForm().toString();
+                        String val2 = st2.getLiteral().getLexicalForm().toString();
 
-        String similarityLevel = "0";
-        int ngramSize = 2;
-        Statement st1;
-        Statement st2;
-        MatchingDBHandler.flushSimilarityDB();
-        for (String entry1 : allIndividualsForKey1.keySet()) {
-            st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),prop1);
-            for (String entry2 : allIndividualsForKey2.keySet()) {
-                LOGGER.debug("[Comparator] Compare " + entry1 + " vs " + entry2);
-                similarityLevel = "0";
-                ngramSize = 2;
-                st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),prop2);
+                        if (val1.length() > 20 || val2.length() > 20) {
+                            ngramSize = 3;
+                        }
+                        SorensenDice sd = new SorensenDice();
+                        float k = sd.computeSimilarity(val1, val2, ngramSize);
+                        if (k > 0.85) {
+                            similarityLevel = "3";
+                        }
+                        if (k > 0.75 && k <= 0.85) {
+                            similarityLevel = "2";
+                        }
+                        if (k > 0.6 && k <= 0.75) {
+                            similarityLevel = "1";
+                        }
+                        if (k <= 0.6) {
+                            similarityLevel = "0";
+                        }
 
-                if (st1.getObject().isLiteral() && st2.getObject().isLiteral()) {
-                    String val1 = st1.getLiteral().getLexicalForm().toString();
-                    String val2 = st2.getLiteral().getLexicalForm().toString();
+                        LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k + " similarityLevel: " + similarityLevel);
 
-                    if (val1.length() > 20 || val2.length() > 20) {
-                        ngramSize = 3;
                     }
-                    SorensenDice sd = new SorensenDice();
-                    float k = sd.computeSimilarity(val1, val2, ngramSize);
-                    if (k > 0.85) {
-                        similarityLevel = "3";
+                    if (Integer.parseInt(similarityLevel) > 0) {
+                        MatchingDBHandler.addIndividualSimilarity(entry1, entry2, similarityLevel);
                     }
-                    if (k > 0.75 && k <= 0.85) {
-                        similarityLevel = "2";
-                    }
-                    if (k > 0.6 && k <= 0.75) {
-                        similarityLevel = "1";
-                    }
-                    if (k <= 0.6) {
-                        similarityLevel = "0";
-                    }
-
-                    LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k + " similarityLevel: " + similarityLevel);
 
                 }
-                if (Integer.parseInt(similarityLevel) > 0) {
-                    MatchingDBHandler.addIndividualSimilarity(entry1, entry2, similarityLevel);
-                }
-
             }
+            provideSemanticProperties(ontModel);
+
+        }catch (NullPointerException e){
+            LOGGER.error("[Comparator] Comparison failed: " + e.getMessage());
         }
-        provideSemanticProperties(ontModel);
+
 
     }
 
