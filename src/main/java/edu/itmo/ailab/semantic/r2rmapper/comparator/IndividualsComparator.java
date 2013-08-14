@@ -1,19 +1,19 @@
 package edu.itmo.ailab.semantic.r2rmapper.comparator;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
-import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFModelGenerator;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.RDFUtils;
 import edu.itmo.ailab.semantic.r2rmapper.vocabulary.R2R;
 import edu.itmo.ailab.semantic.r2rmapper.vocabulary.SKOS;
 import org.apache.log4j.Logger;
 
 
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -39,12 +39,26 @@ public class IndividualsComparator {
 
         try {
             ResIterator ri = ontModel.listSubjectsWithProperty(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+            Multimap<Resource,Resource> similarityMultiMap = HashMultimap.create();
             while(ri.hasNext()){
                 Resource subjectWithProperty = ri.next();
                 Resource className = subjectWithProperty.getPropertyResourceValue(RDFS.domain);
-                Resource similarSubjectWithProperty = subjectWithProperty.getPropertyResourceValue(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
-                Resource similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
-                startComparison(ontModel,className.getURI(),similarClassName.getURI(),subjectWithProperty.getURI(),similarSubjectWithProperty.getURI());
+                similarityMultiMap.put(className,subjectWithProperty);
+            }
+            if(similarityMultiMap != null){
+                Set<String> prop1= new HashSet();
+                Set<String> prop2= new HashSet();
+                for (Resource classKey : similarityMultiMap.keySet()) {
+                    Resource similarClassName = null;
+                    for(Resource property : similarityMultiMap.get(classKey)){
+                        Resource similarSubjectWithProperty = property.getPropertyResourceValue(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+                        similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
+                        prop1.add(property.getURI());
+                        prop2.add(similarSubjectWithProperty.getURI());
+                    }
+                    startComparison(ontModel,classKey.getURI(),similarClassName.getURI(), prop1, prop2);
+
+                }
             }
         }catch(NullPointerException e){
             LOGGER.error("[Comparator] similarTo AnnotationProperty was not found. Comparison failed.");
@@ -52,12 +66,8 @@ public class IndividualsComparator {
 
     }
 
-    private void startComparison(OntModel ontModel, String className1, String className2, String prop1, String prop2) {
+    private void startComparison(OntModel ontModel, String className1, String className2, Set<String> prop1, Set<String> prop2) {
 
-        /*String table1 = "sak_film";
-        String table2 = "sak_film";*/
-        //String field1 = "name";
-        //String field2 = "name";
         try{
             String table1 = RDFUtils.parseClassTableNameFromURI(className1);
             String table2 = RDFUtils.parseClassTableNameFromURI(className2);
@@ -69,19 +79,45 @@ public class IndividualsComparator {
             int ngramSize = 2;
             Statement st1;
             Statement st2;
+            String val1 = "";
+            String val2 = "";
+            int counter = 0;
+
             MatchingDBHandler.flushSimilarityDB();
             for (String entry1 : allIndividualsForKey1.keySet()) {
-                st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),prop1);
                 for (String entry2 : allIndividualsForKey2.keySet()) {
                     LOGGER.debug("[Comparator] Compare " + entry1 + " vs " + entry2);
                     similarityLevel = "0";
                     ngramSize = 2;
-                    st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),prop2);
 
-                    if (st1.getObject().isLiteral() && st2.getObject().isLiteral()) {
-                        String val1 = st1.getLiteral().getLexicalForm().toString();
-                        String val2 = st2.getLiteral().getLexicalForm().toString();
+                    if(prop1 != null && prop2 != null){
+                        counter = 0;
+                        for(String property1 : prop1){
+                            st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),property1);
+                            if (st1.getObject().isLiteral()){
+                                if(counter == 0){
+                                    val1 = st1.getLiteral().getLexicalForm().toString();
+                                }else{
+                                    val1 = val1 + " " + st1.getLiteral().getLexicalForm().toString();
+                                }
+                            }
+                            counter++;
+                        }
+                        counter = 0;
+                        for(String property2 : prop2){
+                            st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),property2);
+                            if (st2.getObject().isLiteral()){
+                                if(counter == 0){
+                                    val2 = st2.getLiteral().getLexicalForm().toString();
+                                }else{
+                                    val2 = val2 + " " + st2.getLiteral().getLexicalForm().toString();
+                                }
+                            }
+                            counter++;
+                        }
+                    }
 
+                    if (!val1.isEmpty() && !val2.isEmpty()) {
                         if (val1.length() > 20 || val2.length() > 20) {
                             ngramSize = 3;
                         }
