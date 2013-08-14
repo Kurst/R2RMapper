@@ -9,14 +9,3 @@ Database:
     Type: mysql
     Tables: test, test2
     PrimaryKeys: id, id
----
-Name: System 2
-Url: http://sakilla/
-Prefix: sak
-Database:
-    JdbcUrl: jdbc:mysql://localhost/sakila?zeroDateTimeBehavior=convertToNull
-    Username: root
-    Password:
-    Type: mysql
-    Tables: film
-    PrimaryKeys: film_id

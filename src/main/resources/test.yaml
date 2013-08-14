@@ -11,7 +11,7 @@ Database:
     PrimaryKeys: id, id
 ---
 Name: System 2
-Url: http://localhost/
+Url: http://sakilla/
 Prefix: sak
 Database:
     JdbcUrl: jdbc:mysql://localhost/sakila?zeroDateTimeBehavior=convertToNull
