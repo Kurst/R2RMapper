@@ -36,7 +36,7 @@ public class IndividualsComparator {
     }
 
     public void analyzeSimilarity(OntModel ontModel) {
-
+        //TODO: intruduce hasDomainSimilairty property, together with hasSimilarity. In other words single comparision and multi comparison for a Class.
         try {
             ResIterator ri = ontModel.listSubjectsWithProperty(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
             Multimap<Resource,Resource> similarityMultiMap = HashMultimap.create();

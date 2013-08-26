@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * R2R Mapper. It is a free software.
  *
- * Wrapper around jedis for mappinf of classes to tables
+ * Wrapper around jedis for mapping of classes to tables
  * Author: Ilya Semerhanov
  * Date: 07.08.13
  */
