@@ -5,6 +5,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.util.FileManager;
+import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,10 +24,16 @@ public class TDBManager {
     private Dataset dataset;
     private Model tdbModel;
 
-    public TDBManager(String pathToTDB){
-        this.pathToTDB = pathToTDB;
-        dataset = TDBFactory.createDataset(pathToTDB);
-        tdbModel = dataset.getDefaultModel();
+    public TDBManager(String pathToTDB)
+            throws R2RMapperException {
+        try{
+            this.pathToTDB = pathToTDB;
+            dataset = TDBFactory.createDataset(pathToTDB);
+            tdbModel = dataset.getDefaultModel();
+            LOGGER.info("[TDB] New TDB storage initialized");
+        }catch(Exception e){
+            throw new R2RMapperException("TDB initialization failed: " + e.getMessage());
+        }
     }
 
     public void setDataset(Dataset dataset) {
@@ -45,19 +52,24 @@ public class TDBManager {
         this.tdbModel = tdbModel;
     }
 
-    public void importFromFile(String filePath, String format){
-        this.tdbModel.removeAll();
-        FileManager.get().readModel(this.tdbModel, filePath, format);
-        this.tdbModel.close();
+    public void importFromFile(String filePath, String format) throws R2RMapperException {
+        try{
+            this.tdbModel.removeAll();
+            FileManager.get().readModel(this.tdbModel, filePath, format);
+            this.tdbModel.close();
+            LOGGER.info("[TDB] Data was imported from file");
+        }catch (Exception e){
+            throw new R2RMapperException("Import to TDB failed: " + e.getMessage());
+        }
     }
 
     public void showAllQuery(){
+        LOGGER.info("[TDB] Executing query on triple store");
         String q = "select * where {?s ?p ?o}";
         Query query = QueryFactory.create(q);
         QueryExecution qexec = QueryExecutionFactory.create(query, this.dataset);
         ResultSet results = qexec.execSelect();
         ResultSetFormatter.out(results) ;
-
     }
 
 
