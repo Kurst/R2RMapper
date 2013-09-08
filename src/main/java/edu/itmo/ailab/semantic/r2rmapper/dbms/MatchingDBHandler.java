@@ -67,6 +67,7 @@ public class MatchingDBHandler {
 
     public static void addClassTable(String key,String tableName, String className){
         redis = pool.getResource();
+        redis.select(0);
         try {
             redis.hset(key,tableName,className);
             LOGGER.info("[MatchingDBHandler] New key/value pair added: " + key + " -> " + tableName);
@@ -78,6 +79,7 @@ public class MatchingDBHandler {
 
     public static void addDataTypeProperty(String key,String columnName, String DataTypeProperty){
         redis = pool.getResource();
+        redis.select(0);
         try {
             redis.hset(key,columnName,DataTypeProperty);
             LOGGER.info("[MatchingDBHandler] New key/value pair added: " + key + " -> " + columnName);
@@ -89,6 +91,7 @@ public class MatchingDBHandler {
 
     public static void addIndividualToStorage(String key,String individName, String value){
         redis = pool.getResource();
+        redis.select(0);
         try {
             redis.hset(key,individName,value);
             LOGGER.debug("[MatchingDBHandler] Individual: " +  individName+ " was added to key: " + key);
@@ -99,7 +102,7 @@ public class MatchingDBHandler {
 
     public static String getClassTableName(String key,String tableName){
         redis = pool.getResource();
-
+        redis.select(0);
         try {
             String className = redis.hget(key,tableName);
             LOGGER.debug("[MatchingDBHandler] Value for key " + key + " retrieved: " + className);
@@ -111,7 +114,7 @@ public class MatchingDBHandler {
 
     public static String getPropertyName(String key,String fieldName){
         redis = pool.getResource();
-
+        redis.select(0);
         try {
             String propertyName = redis.hget(key,fieldName);
             LOGGER.debug("[MatchingDBHandler] Value for key " + key + " retrieved: " + propertyName);
@@ -123,7 +126,7 @@ public class MatchingDBHandler {
 
     public static Map<String, String> getAllIndividuals(String key){
         redis = pool.getResource();
-
+        redis.select(0);
         try {
             Map<String, String> allIndividuals = redis.hgetAll(key);
             LOGGER.debug("[MatchingDBHandler] Get all values for key " + key);
@@ -183,6 +186,7 @@ public class MatchingDBHandler {
 
     public static void saveDatasetToDisk(){
         redis = pool.getResource();
+        redis.select(0);
         try {
             redis.save();
             LOGGER.info("[MatchingDBHandler] Redis dataset was saved to disk");
@@ -192,6 +196,7 @@ public class MatchingDBHandler {
     }
     public static void flushDB(){
         redis = pool.getResource();
+        redis.select(0);
         try {
             LOGGER.info("[MatchingDBHandler] Cleaning Redis dataset");
             redis.flushDB();

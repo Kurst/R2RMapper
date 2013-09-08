@@ -152,6 +152,8 @@ public class RDFModelGenerator{
             ontModel.setNsPrefix(R2R.prefix,R2R.NS);
             ontModel.createAnnotationProperty(RDFUtils.createURI(R2R.prefix,R2R.similarToName))
                     .addProperty(RDFS.label,R2R.similarToName);
+            ontModel.createAnnotationProperty(RDFUtils.createURI(R2R.prefix,R2R.similarToManyName))
+                    .addProperty(RDFS.label,R2R.similarToManyName);
             return resource;
         }catch(Exception ex){
             throw new R2RMapperException("[RDF Model Generator] New DataTypeProperty creation failed", ex);

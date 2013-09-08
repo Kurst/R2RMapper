@@ -23,10 +23,13 @@ public class R2R {
     public static final String prefix = "r2r";
     public static final String similarToName = "similarTo";
     public static final String similarToPropertyShortUri = "r2r:similarTo";
+    public static final String similarToManyName = "similarToMany";
+    public static final String similarToManyPropertyShortUri = "r2r:similarToMany";
 
     private static OntModel ontModel = ModelFactory.createOntologyModel();
 
     public static final AnnotationProperty similarTo = ontModel.createAnnotationProperty(NS + similarToName);
+    public static final AnnotationProperty similarToMany = ontModel.createAnnotationProperty(NS + similarToManyName);
 
 
 }

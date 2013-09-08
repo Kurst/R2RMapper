@@ -36,17 +36,32 @@ public class IndividualsComparator {
     }
 
     public void analyzeSimilarity(OntModel ontModel) {
-        //TODO: intruduce hasDomainSimilairty property, together with hasSimilarity. In other words single comparision and multi comparison for a Class.
         LOGGER.info("[Comparator] Analyzing of similarity started");
         try {
-            ResIterator ri = ontModel.listSubjectsWithProperty(
+            MatchingDBHandler.flushSimilarityDB();
+            ResIterator similarToIterator = ontModel.listSubjectsWithProperty(
                     RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+            ResIterator similarToManyIterator = ontModel.listSubjectsWithProperty(
+                    RDFUtils.getAnnotationProperty(ontModel,R2R.similarToManyPropertyShortUri));
             Multimap<Resource,Resource> similarityMultiMap = HashMultimap.create();
-            while(ri.hasNext()){
-                Resource subjectWithProperty = ri.next();
+            Multimap<Resource,Resource> manySimilarityMultiMap = HashMultimap.create();
+            while(similarToIterator.hasNext()){
+                Resource subjectWithProperty = similarToIterator.next();
                 Resource className = subjectWithProperty.getPropertyResourceValue(RDFS.domain);
                 similarityMultiMap.put(className,subjectWithProperty);
             }
+            while(similarToManyIterator.hasNext()){
+                Resource subjectWithProperty = similarToManyIterator.next();
+                Resource className = subjectWithProperty.getPropertyResourceValue(RDFS.domain);
+                manySimilarityMultiMap.put(className,subjectWithProperty);
+            }
+            //delete values from similarityMultiMap if they are in manySimilarityMultiMap
+            for (Entry<Resource,Resource> item : manySimilarityMultiMap.entries()) {
+                if(similarityMultiMap.containsEntry(item.getKey(),item.getValue())){
+                    similarityMultiMap.remove(item.getKey(),item.getValue());
+                }
+            }
+
             if(similarityMultiMap.size() > 0){
                 Set<String> prop1= new HashSet();
                 Set<String> prop2= new HashSet();
@@ -62,7 +77,27 @@ public class IndividualsComparator {
                     startComparison(ontModel,classKey.getURI(),similarClassName.getURI(), prop1, prop2);
                 }
             }else{
-                LOGGER.info("[Comparator] Similarity properties were not found");
+                LOGGER.info("[Comparator] Properties similarTo were not found");
+            }
+            if(manySimilarityMultiMap.size() > 0){
+                Set<String> prop1= new HashSet();
+                Set<String> prop2= new HashSet();
+                for (Resource classKey : manySimilarityMultiMap.keySet()) {
+                    Resource similarClassName = null;
+                    for(Resource property : manySimilarityMultiMap.get(classKey)){
+                        StmtIterator itr = property.listProperties(RDFUtils.getAnnotationProperty(ontModel,
+                                R2R.similarToManyPropertyShortUri));
+                        prop1.add(property.getURI());
+                        while(itr.hasNext()){
+                            Resource similarSubjectWithProperty = itr.next().getObject().asResource();
+                            prop2.add(similarSubjectWithProperty.getURI());
+                            similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
+                        }
+                    }
+                    startComparison(ontModel,classKey.getURI(),similarClassName.getURI(), prop1, prop2);
+                }
+            }else{
+                LOGGER.info("[Comparator] Properties similarToMany were not found");
             }
         }catch(NullPointerException e){
             LOGGER.error("[Comparator] similarTo AnnotationProperty was not found. Comparison failed.");
@@ -87,7 +122,6 @@ public class IndividualsComparator {
             String val2 = "";
             int counter = 0;
 
-            MatchingDBHandler.flushSimilarityDB();
             for (String entry1 : allIndividualsForKey1.keySet()) {
                 for (String entry2 : allIndividualsForKey2.keySet()) {
                     LOGGER.debug("[Comparator] Compare " + entry1 + " vs " + entry2);
@@ -99,11 +133,11 @@ public class IndividualsComparator {
                         for(String property1 : prop1){
                             st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),property1);
                             if (st1.getObject().isLiteral()){
-                                if(counter == 0){
-                                    val1 = st1.getLiteral().getLexicalForm();
-                                }else{
-                                    val1 = val1 + " " + st1.getLiteral().getLexicalForm();
-                                }
+                                    if(counter == 0){
+                                        val1 = st1.getLiteral().getLexicalForm();
+                                    }else{
+                                        val1 = val1 + " " + st1.getLiteral().getLexicalForm();
+                                    }
                             }
                             counter++;
                         }
@@ -111,11 +145,11 @@ public class IndividualsComparator {
                         for(String property2 : prop2){
                             st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),property2);
                             if (st2.getObject().isLiteral()){
-                                if(counter == 0){
-                                    val2 = st2.getLiteral().getLexicalForm();
-                                }else{
-                                    val2 = val2 + " " + st2.getLiteral().getLexicalForm();
-                                }
+                                    if(counter == 0){
+                                        val2 = st2.getLiteral().getLexicalForm();
+                                    }else{
+                                        val2 = val2 + " " + st2.getLiteral().getLexicalForm();
+                                    }
                             }
                             counter++;
                         }
@@ -139,9 +173,7 @@ public class IndividualsComparator {
                         if (k <= 0.6) {
                             similarityLevel = "0";
                         }
-
                         LOGGER.debug("[Comparator] Compare values: " + val1 + " vs " + val2 + " Similarity: " + k + " similarityLevel: " + similarityLevel);
-
                     }
                     if (Integer.parseInt(similarityLevel) > 0) {
                         MatchingDBHandler.addIndividualSimilarity(entry1, entry2, similarityLevel);
@@ -167,22 +199,24 @@ public class IndividualsComparator {
         int i = 0;
         for (String key : keys) {
             i++;
-            System.out.println(i);
             singleSimilarIndividualMap = MatchingDBHandler.getSingleSimilarIndividual(key);
             for (Entry<String, String> singleSimilarIndividual : singleSimilarIndividualMap.entrySet()) {
                 individual1 = ontModel.getIndividual(key);
                 individual2 = ontModel.getIndividual(singleSimilarIndividual.getKey());
                 if (singleSimilarIndividual.getValue().equals("3")) {
                     individual1.addProperty(SKOS.exactMatch, individual2);
-                    individual2.addProperty(SKOS.exactMatch, individual1);
+                    LOGGER.info("[Comparator] exactMatch property was added for: " + individual1.getURI());
+                    //individual2.addProperty(SKOS.exactMatch, individual1);
                 }
                 if (singleSimilarIndividual.getValue().equals("2")) {
                     individual1.addProperty(SKOS.closeMatch, individual2);
-                    individual2.addProperty(SKOS.closeMatch, individual1);
+                    LOGGER.info("[Comparator] closeMatch property was added for: " + individual1.getURI());
+                    //individual2.addProperty(SKOS.closeMatch, individual1);
                 }
                 if (singleSimilarIndividual.getValue().equals("1")) {
                     individual1.addProperty(SKOS.narrowMatch, individual2);
-                    individual2.addProperty(SKOS.narrowMatch, individual1);
+                    LOGGER.info("[Comparator] narrowMatch property was added for: " + individual1.getURI());
+                    //individual2.addProperty(SKOS.narrowMatch, individual1);
                 }
 
             }
