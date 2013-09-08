@@ -99,9 +99,9 @@ public class IndividualsComparator {
                             st1 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry1),property1);
                             if (st1.getObject().isLiteral()){
                                 if(counter == 0){
-                                    val1 = st1.getLiteral().getLexicalForm().toString();
+                                    val1 = st1.getLiteral().getLexicalForm();
                                 }else{
-                                    val1 = val1 + " " + st1.getLiteral().getLexicalForm().toString();
+                                    val1 = val1 + " " + st1.getLiteral().getLexicalForm();
                                 }
                             }
                             counter++;
@@ -111,9 +111,9 @@ public class IndividualsComparator {
                             st2 = RDFUtils.getStatement(ontModel, ontModel.getIndividual(entry2),property2);
                             if (st2.getObject().isLiteral()){
                                 if(counter == 0){
-                                    val2 = st2.getLiteral().getLexicalForm().toString();
+                                    val2 = st2.getLiteral().getLexicalForm();
                                 }else{
-                                    val2 = val2 + " " + st2.getLiteral().getLexicalForm().toString();
+                                    val2 = val2 + " " + st2.getLiteral().getLexicalForm();
                                 }
                             }
                             counter++;
