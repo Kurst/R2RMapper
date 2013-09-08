@@ -39,7 +39,8 @@ public class IndividualsComparator {
         //TODO: intruduce hasDomainSimilairty property, together with hasSimilarity. In other words single comparision and multi comparison for a Class.
         LOGGER.info("[Comparator] Analyzing of similarity started");
         try {
-            ResIterator ri = ontModel.listSubjectsWithProperty(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+            ResIterator ri = ontModel.listSubjectsWithProperty(
+                    RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
             Multimap<Resource,Resource> similarityMultiMap = HashMultimap.create();
             while(ri.hasNext()){
                 Resource subjectWithProperty = ri.next();
@@ -52,13 +53,13 @@ public class IndividualsComparator {
                 for (Resource classKey : similarityMultiMap.keySet()) {
                     Resource similarClassName = null;
                     for(Resource property : similarityMultiMap.get(classKey)){
-                        Resource similarSubjectWithProperty = property.getPropertyResourceValue(RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
+                        Resource similarSubjectWithProperty = property.getPropertyResourceValue(
+                                RDFUtils.getAnnotationProperty(ontModel,R2R.similarToPropertyShortUri));
                         similarClassName = similarSubjectWithProperty.getPropertyResourceValue(RDFS.domain);
                         prop1.add(property.getURI());
                         prop2.add(similarSubjectWithProperty.getURI());
                     }
                     startComparison(ontModel,classKey.getURI(),similarClassName.getURI(), prop1, prop2);
-
                 }
             }else{
                 LOGGER.info("[Comparator] Similarity properties were not found");
