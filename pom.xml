@@ -26,5 +26,10 @@
             <name>DBIS Maven Releases Repository</name>
             <url>http://on.cs.unibas.ch/maven/repository</url>
         </repository>
+        <repository>
+            <id>jvnet-nexus-releases</id>
+            <name>jvnet-nexus-releases</name>
+            <url>https://maven.java.net/content/repositories/releases/</url>
+        </repository>
     </repositories>
 </project>
