@@ -10,13 +10,12 @@ package edu.itmo.ailab.semantic.r2rmapper.wi;
 import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
-import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
+import edu.itmo.ailab.semantic.r2rmapper.rdf.impl.WebMapperImpl;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 @ManagedBean
 @SessionScoped
@@ -56,7 +55,7 @@ public class MainBean implements Serializable {
         //String inputStreamString = new Scanner(input,"UTF-8").useDelimiter("\\A").next();
         //test = inputStreamString;
         PropertyLoader loader;
-        BasicMapper bm;
+        WebMapperImpl wm;
         String outputFileNamePhase1 = "integrated_ontology_phase_1.owl";
         String outputFileNamePhase2 = "integrated_ontology_phase_2.owl";
         String ontologyFormat = "TURTLE";
@@ -64,11 +63,11 @@ public class MainBean implements Serializable {
         MatchingDBHandler.connect();
 
         loader = new PropertyLoader(configPath);
-        bm = new BasicMapper(loader.properties);
+        wm = new WebMapperImpl(loader.properties);
 
         MatchingDBHandler.flushDB();
-        bm.createStructureMap();
-        bm.printModelToFile(ontologyFormat,outputFileNamePhase1,System.getProperty("jboss.server.data.dir")+"/");
+        wm.createStructureMap();
+        wm.printModelToFile(ontologyFormat,outputFileNamePhase1,System.getProperty("jboss.server.data.dir")+"/");
 
 
 

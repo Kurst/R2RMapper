@@ -9,7 +9,7 @@ import com.beust.jcommander.JCommander;
 
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
-import edu.itmo.ailab.semantic.r2rmapper.rdf.BasicMapper;
+import edu.itmo.ailab.semantic.r2rmapper.rdf.impl.ConsoleMapperImpl;
 
 
 /**
@@ -36,7 +36,7 @@ public class R2RMapper {
 		CommandLine cls = new CommandLine();
 		new JCommander(cls, args);
         PropertyLoader loader;
-        BasicMapper bm;
+        ConsoleMapperImpl bm;
         IndividualsComparator ic;
         String outputFileNamePhase1 = "integrated_ontology_phase_1.owl";
         String outputFileNamePhase2 = "integrated_ontology_phase_2.owl";
@@ -51,7 +51,7 @@ public class R2RMapper {
             }
             MatchingDBHandler.connect();
             loader = new PropertyLoader(cls.config);
-            bm = new BasicMapper(loader.properties);
+            bm = new ConsoleMapperImpl(loader.properties);
             ic = new IndividualsComparator();
             try{
                 switch (cls.phase){
