@@ -58,7 +58,7 @@ public class R2RMapper {
                     case "1":   //Phase for extracting structure
                         MatchingDBHandler.flushDB();
                         bm.createStructureMap();
-                        bm.printModelToFile(ontologyFormat,outputFileNamePhase1);
+                        bm.printModelToFile(ontologyFormat,outputFileNamePhase1,"");
                         //bm.printModel(ontologyFormat);
                         break;
                     case "2":   //Phase for extracting and comparing individuals
@@ -69,7 +69,7 @@ public class R2RMapper {
                             if(cls.compare){
                                 ic.analyzeSimilarity(bm.getModel().getOntModel());
                             }
-                            bm.printModelToFile(ontologyFormat,outputFileNamePhase2);
+                            bm.printModelToFile(ontologyFormat,outputFileNamePhase2,"");
 
                         }else{
                             throw new R2RMapperException("For phase 2 ontology file is not defined");

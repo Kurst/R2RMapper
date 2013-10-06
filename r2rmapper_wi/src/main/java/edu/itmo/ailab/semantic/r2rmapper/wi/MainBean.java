@@ -49,7 +49,7 @@ public class MainBean implements Serializable {
 
     }
 
-    public void  readTest() throws FileNotFoundException, R2RMapperException, ClassNotFoundException, InstantiationException, SQLException, IllegalAccessException {
+    public void  readTest() throws IOException, R2RMapperException, ClassNotFoundException, InstantiationException, SQLException, IllegalAccessException {
         String settingsPath = System.getProperty("jboss.server.data.dir") + "/settings.yaml";
         String configPath = System.getProperty("jboss.server.data.dir") + "/config.yaml";
         //InputStream input = new FileInputStream(new File(path));
@@ -68,6 +68,7 @@ public class MainBean implements Serializable {
 
         MatchingDBHandler.flushDB();
         bm.createStructureMap();
+        bm.printModelToFile(ontologyFormat,outputFileNamePhase1,System.getProperty("jboss.server.data.dir")+"/");
 
 
 

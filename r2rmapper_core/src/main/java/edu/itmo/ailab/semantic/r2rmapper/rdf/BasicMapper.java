@@ -211,15 +211,15 @@ public class BasicMapper {
 	 * Prints RDF model in file
 	 * @param format
      * @param filename
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public void printModelToFile(String format, String filename)
+	public void printModelToFile(String format, String filename, String path)
             throws IOException{
 		
-		LOGGER.info("[R2R Mapper] Printing output into file: output/" + filename);
+		LOGGER.info("[R2R Mapper] Printing output into file: " + path + "output/" + filename);
 		
-		new File("output").mkdirs();
-		File file = new File("output/" + filename);
+		new File(path + "/output").mkdirs();
+		File file = new File(path + "output/" + filename);
 		
 		OntModel ontModel = model.getOntModel();
 		RDFWriter rdfWriter = ontModel.getWriter(format);
