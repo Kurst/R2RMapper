@@ -28,6 +28,8 @@
         <spring.version>3.2.4.RELEASE</spring.version>
         <junit.version>4.11</junit.version>
         <jsf.version>2.1</jsf.version>
+        <primefaces.version>4.0.RC1</primefaces.version>
+        <r2rmapper-core.version>2.0-SNAPSHOT</r2rmapper-core.version>
     </properties>
     <build>
         <pluginManagement>
@@ -135,6 +137,16 @@
                 <artifactId>javax.faces-api</artifactId>
                 <version>${jsf.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.primefaces</groupId>
+                <artifactId>primefaces</artifactId>
+                <version>${primefaces.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>edu.itmo.ailab.semantic</groupId>
+                <artifactId>r2rmapper-core</artifactId>
+                <version>${r2rmapper-core.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

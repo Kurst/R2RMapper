@@ -33,10 +33,27 @@
                     <target>${jdk.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jboss.as.plugins</groupId>
+                <artifactId>jboss-as-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
+        <!-- R2R Mapper Core-->
+        <dependency>
+            <groupId>edu.itmo.ailab.semantic</groupId>
+            <artifactId>r2rmapper-core</artifactId>
+        </dependency>
 
         <!-- Spring 3 dependencies -->
         <dependency>
@@ -60,6 +77,10 @@
             <groupId>javax.faces</groupId>
             <artifactId>javax.faces-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
         </dependency>
     </dependencies>
 
