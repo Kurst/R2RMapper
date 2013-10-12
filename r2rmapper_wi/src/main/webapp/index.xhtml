@@ -6,36 +6,26 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui">
-
-<h:head>
-    <link type="text/css" rel="stylesheet" href="resources/styles/bar.css" />
-</h:head>
 <h:body>
-    <div id="navwrapper">
-        <ul class="floatleft" id="nav">
-            <li><a>R2RMapper +</a></li>
-            <li><a class="current" href="#">Экспорт</a></li>
-            <li><a href="#">Настройки</a></li>>
-        </ul>
-        <br class="clear" /></div>
-    <h1>R2RMapper Test</h1>
 
-    <h:form>
-        <p:commandButton value="Test" id="ajax" update="display"
-                             actionListener="#{mainBean.saveTest}" styleClass="ui-priority-primary"/>
-        <p:commandButton value="Read" id="ajax2" update="display" actionListener="#{mainBean.readTest}" styleClass="ui-priority-primary"/>
+    <ui:composition template="templates/masterLayout.xhtml">
+        <ui:define name="content">
+            <h:form>
+                <p:commandButton value="Test" id="ajax" update="display"
+                                 actionListener="#{mainBean.saveTest}" styleClass="ui-priority-primary"/>
+                <p:commandButton value="Read" id="ajax2" update="display" actionListener="#{mainBean.readTest}" styleClass="ui-priority-primary"/>
 
 
-        <p:panel id="display" header="Information" style="margin-top:10px;">
-            <h:panelGrid columns="2">
-                <h:outputText value="Firstname: " />
-                <h:outputText value="#{mainBean.test}" />
-            </h:panelGrid>
-        </p:panel>
-    </h:form>
-
-
-
+                <p:panel id="display" header="Information" style="margin-top:10px;">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Firstname: " />
+                        <h:outputText value="#{mainBean.test}" />
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
 
 </h:body>
+
 </html>

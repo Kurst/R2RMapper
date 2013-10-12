@@ -33,6 +33,7 @@
                     <target>${jdk.version}</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.jboss.as.plugins</groupId>
                 <artifactId>jboss-as-maven-plugin</artifactId>
@@ -53,6 +54,11 @@
         <dependency>
             <groupId>edu.itmo.ailab.semantic</groupId>
             <artifactId>r2rmapper-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
         </dependency>
 
         <!-- Spring 3 dependencies -->

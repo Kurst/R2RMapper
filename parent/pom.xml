@@ -29,6 +29,8 @@
         <junit.version>4.11</junit.version>
         <jsf.version>2.1</jsf.version>
         <primefaces.version>4.0.RC1</primefaces.version>
+        <primefaces.theme.version>1.0.10</primefaces.theme.version>
+        <commons-lang.version>20030203.000129</commons-lang.version>
         <r2rmapper-core.version>2.0-SNAPSHOT</r2rmapper-core.version>
     </properties>
     <build>
@@ -67,6 +69,11 @@
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
             </dependency>
             <dependency>
                 <groupId>mysql</groupId>
@@ -144,10 +151,17 @@
                 <version>${primefaces.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.primefaces.themes</groupId>
+                <artifactId>bootstrap</artifactId>
+                <version>${primefaces.theme.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>edu.itmo.ailab.semantic</groupId>
                 <artifactId>r2rmapper-core</artifactId>
                 <version>${r2rmapper-core.version}</version>
             </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 
