@@ -8,17 +8,12 @@
       xmlns:p="http://primefaces.org/ui">
 <h:body>
 
-    <ui:composition template="templates/masterLayout.xhtml">
+    <ui:composition template="../templates/masterLayout.xhtml">
         <ui:define name="content">
             <h:form>
-                <p:commandButton value="Test" id="ajax" update="display"
-                                 actionListener="#{mainBean.saveTest}" styleClass="ui-priority-primary"/>
-                <p:commandButton value="Read" id="ajax2" update="display" actionListener="#{mainBean.readTest}" styleClass="ui-priority-primary"/>
-
-
-                <p:panel id="display" header="Information" style="margin-top:10px;">
+                             <p:panel id="display" header="Information" style="margin-top:10px;">
                     <h:panelGrid columns="2">
-                        <h:outputText value="Firstname: #{navigationController.pageId} " />
+                        <h:outputText value="Settings: " />
                         <h:outputText value="#{mainBean.test}" />
                     </h:panelGrid>
                 </p:panel>

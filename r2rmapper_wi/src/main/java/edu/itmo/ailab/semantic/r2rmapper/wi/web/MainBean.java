@@ -1,4 +1,4 @@
-package edu.itmo.ailab.semantic.r2rmapper.wi;
+package edu.itmo.ailab.semantic.r2rmapper.wi.web;
 
 /**
  * R2R Mapper. It is a free software.
