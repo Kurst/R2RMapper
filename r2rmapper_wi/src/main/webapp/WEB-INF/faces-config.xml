@@ -14,13 +14,19 @@
         <navigation-case>
             <from-action>#{navigationController.showBarPage}</from-action>
             <from-outcome>settings</from-outcome>
-            <to-view-id>/pages/settings.xhtml</to-view-id>
+            <to-view-id>/pages/settings/settings.xhtml</to-view-id>
             <redirect />
         </navigation-case>
         <navigation-case>
             <from-action>#{navigationController.showBarPage}</from-action>
             <from-outcome>index</from-outcome>
             <to-view-id>/index.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+        <navigation-case>
+            <from-action>#{navigationController.showEditSettingsPage}</from-action>
+            <from-outcome>edit_settings</from-outcome>
+            <to-view-id>/pages/settings/edit_settings.xhtml</to-view-id>
             <redirect />
         </navigation-case>
     </navigation-rule>

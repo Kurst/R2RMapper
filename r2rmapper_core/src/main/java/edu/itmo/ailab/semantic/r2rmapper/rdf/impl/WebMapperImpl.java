@@ -61,6 +61,7 @@ public class WebMapperImpl extends BasicMapper{
 		rdfWriter.setProperty("width", String.valueOf(Integer.MAX_VALUE));
 		rdfWriter.write(ontModel, new FileOutputStream(file), null);
 		System.out.println("\n");
+
 		//transformToUTF8(new File("output/" + filename), "UTF-8", new File("output/" + "ut8_" + filename), "ascii");		
 	}
 

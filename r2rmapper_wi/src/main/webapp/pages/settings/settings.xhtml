@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<h:body>
+
+    <ui:composition template="../../templates/masterLayout.xhtml">
+        <ui:define name="content">
+            <h:form>
+                <p:panel id="display" header="Application" style="margin-top:10px;">
+
+                    <p:panelGrid style="margin-top:20px">
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column colspan="2">Settings</p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column colspan="2">Redis Server</p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:column style="font-weight: bold;">
+                                <h:outputLabel  value="Hostname: " />
+                            </p:column>
+                            <p:column style="font-weight: bold;">
+                                <h:outputLabel value="#{settingsController.redis_hostname}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="font-weight: bold;">
+                                <h:outputLabel value="Port: " />
+                            </p:column>
+                            <p:column style="font-weight: bold;">
+                                <h:outputLabel value="#{settingsController.redis_port}" />
+                            </p:column>
+                        </p:row>
+                        <f:facet name="footer">
+                            <p:row>
+                                <p:column colspan="2">
+                                    <p:commandButton value="Edit" ajax="false" action="#{navigationController.showEditSettingsPage}" icon="ui-icon-edit" style="margin:0"/>
+                                </p:column>
+                            </p:row>
+                        </f:facet>
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</h:body>
+
+</html>

@@ -9,11 +9,17 @@
 <h:body>
     <ui:composition template="templates/masterLayout.xhtml">
         <ui:define name="content">
-            <br/><br/>
-            <div class="errorDetails">
-                Error details: <br/>
-                #{flash.keep.errorDetails}
-            </div>
+            <h:form>
+                <p:panel id="display" header="Error Occured" style="margin-top:10px;">
+                    <h:panelGrid columns="1">
+                        <div class="errorDetails">
+                            #{flash.keep.errorMsg}
+                        </div>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+
+
         </ui:define>
     </ui:composition>
 
