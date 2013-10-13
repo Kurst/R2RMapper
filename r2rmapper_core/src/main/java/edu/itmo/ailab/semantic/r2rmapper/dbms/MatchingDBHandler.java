@@ -47,6 +47,23 @@ public class MatchingDBHandler {
         return localInstance;
     }
 
+    public static MatchingDBHandler getInstance() {
+        MatchingDBHandler localInstance = instance;
+        if (localInstance == null) {
+            synchronized (MatchingDBHandler.class) {
+                localInstance = instance;
+                if (localInstance == null) {
+                    instance = localInstance = new MatchingDBHandler();
+                }
+            }
+        }
+        return localInstance;
+    }
+
+    /**
+     * Connect using values from settings file directly
+     *
+     */
     public static void connect()
             throws FileNotFoundException {
         InputStream input = new FileInputStream(new File(settings));
@@ -58,6 +75,18 @@ public class MatchingDBHandler {
         String hostname = redisSettings.get("hostname").toString();
         Integer port = (Integer) redisSettings.get("port");
 
+        LOGGER.info("[MatchingDBHandler] Connecting to Redis server " + hostname + ":" + port.toString());
+        pool = new JedisPool(new JedisPoolConfig(), hostname, port);
+        redis = pool.getResource();
+        pool.returnResource(redis);
+        LOGGER.info("[MatchingDBHandler] Connection established");
+    }
+
+    /**
+     * Connect using provided values
+     *
+     */
+    public static void connect(String hostname, Integer port){
         LOGGER.info("[MatchingDBHandler] Connecting to Redis server " + hostname + ":" + port.toString());
         pool = new JedisPool(new JedisPoolConfig(), hostname, port);
         redis = pool.getResource();

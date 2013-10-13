@@ -66,11 +66,10 @@ public class StartupBean {
 
 
         System.out.println("##################R2RMAPPER STARTED######################");
-
     }
 
     @PreDestroy
     private void shutdown() {
-
+        redisCache.clear();
     }
 }

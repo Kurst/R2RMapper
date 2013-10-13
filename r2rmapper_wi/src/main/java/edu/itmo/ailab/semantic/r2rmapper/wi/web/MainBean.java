@@ -11,9 +11,11 @@ import edu.itmo.ailab.semantic.r2rmapper.dbms.MatchingDBHandler;
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
 import edu.itmo.ailab.semantic.r2rmapper.properties.PropertyLoader;
 import edu.itmo.ailab.semantic.r2rmapper.rdf.impl.WebMapperImpl;
+import edu.itmo.ailab.semantic.r2rmapper.wi.beans.service.impl.RedisCacheImpl;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.inject.Inject;
 import java.io.*;
 import java.sql.SQLException;
 
@@ -25,6 +27,9 @@ public class MainBean implements Serializable {
 
     private String name;
     private String test;
+
+    @Inject
+    private RedisCacheImpl redisCache;
 
     public String getTest() {
         return test;
@@ -59,8 +64,10 @@ public class MainBean implements Serializable {
         String outputFileNamePhase1 = "integrated_ontology_phase_1.owl";
         String outputFileNamePhase2 = "integrated_ontology_phase_2.owl";
         String ontologyFormat = "TURTLE";
-        MatchingDBHandler.getInstance(settingsPath);
-        MatchingDBHandler.connect();
+        String host = redisCache.fetchValueFromGroup("settings","redis.hostname");
+        Integer port = Integer.parseInt(redisCache.fetchValueFromGroup("settings","redis.port"));
+        MatchingDBHandler.getInstance();
+        MatchingDBHandler.connect(host,port);
 
         loader = new PropertyLoader(configPath);
         wm = new WebMapperImpl(loader.properties);
