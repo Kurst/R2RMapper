@@ -91,7 +91,7 @@ public class R2RConfigurationHandlerImpl implements IR2RConfigurationHandler {
             FileWriter fw = new FileWriter(path);
             fw.write(output);
             fw.close();
-            LOGGER.info("R2RMapper: Settings were updated");
+            LOGGER.info("R2RMapper: File " + path + "was updated");
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
