@@ -11,6 +11,7 @@
     <ui:composition template="../../templates/masterLayout.xhtml">
         <ui:define name="content">
             <h:form>
+                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
                 <p:panel id="display" header="Application" style="margin-top:10px;">
 
                     <p:panelGrid style="margin-top:20px">
@@ -41,7 +42,7 @@
                         <f:facet name="footer">
                             <p:row>
                                 <p:column colspan="2">
-                                    <p:commandButton value="Edit" ajax="false" action="#{navigationController.showEditSettingsPage}" icon="ui-icon-edit" style="margin:0"/>
+                                    <p:commandButton value="Edit" ajax="false" action="edit_settings?faces-redirect=true" icon="ui-icon-edit" style="margin:0"/>
                                 </p:column>
                             </p:row>
                         </f:facet>

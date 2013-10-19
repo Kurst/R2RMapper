@@ -13,7 +13,11 @@
     <div id="navwrapper">
         <h:form>
             <ul class="floatleft" id="nav">
-                <li><a>R2RMapper +</a></li>
+                <li>
+                    <h:commandLink action="#{navigationController.showBarPage}" value="R2RMapper +">
+                        <f:param name="pageId" value="0" />
+                    </h:commandLink>
+                </li>
                 <li>
                     <h:commandLink action="#{navigationController.showBarPage}" value="Export">
                         <f:param name="pageId" value="0" />

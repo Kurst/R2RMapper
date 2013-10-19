@@ -1,9 +1,10 @@
 package edu.itmo.ailab.semantic.r2rmapper.wi.beans;
 
 import edu.itmo.ailab.semantic.r2rmapper.exceptions.R2RMapperException;
+import edu.itmo.ailab.semantic.r2rmapper.wi.beans.service.impl.R2RConfigurationHandlerImpl;
 import edu.itmo.ailab.semantic.r2rmapper.wi.beans.service.impl.RedisCacheImpl;
 import org.apache.log4j.Logger;
-import org.yaml.snakeyaml.Yaml;
+
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,10 +12,7 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -36,23 +34,19 @@ public class StartupBean {
     @Inject
     private RedisCacheImpl redisCache;
 
+    @Inject
+    private R2RConfigurationHandlerImpl r2rConfigHandler;
+
     @PostConstruct
     private void startup() {
-        LOGGER.info("R2RMapper: ***Initializing configuration and settings***");
+        LOGGER.info("##################R2RMAPPER Initializing configuration and settings##################");
 
-        String settingsPath = System.getProperty("jboss.server.data.dir") + "/settings.yaml";
-        InputStream inputSettings = null;
-        Yaml yaml = new Yaml();
-
+        Map redisSettings = null;
         try {
-            inputSettings = new FileInputStream(new File(settingsPath));
-        } catch (FileNotFoundException e) {
+            redisSettings = r2rConfigHandler.getRedisSettings();
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
-
-        LOGGER.info("[R2RMapper] Loading settings from: " + settingsPath);
-        Map allSettings = (Map) yaml.load(inputSettings);
-        Map redisSettings = (Map) allSettings.get("RedisServer");
         String hostname = redisSettings.get("hostname").toString();
         Integer port = (Integer) redisSettings.get("port");
         try {

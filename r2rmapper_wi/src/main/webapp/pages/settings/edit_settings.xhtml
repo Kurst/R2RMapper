@@ -32,8 +32,11 @@
 
                         <f:facet name="footer">
                             <p:row>
-                                <p:column colspan="2">
-                                     <p:commandButton type="button" value="Save" icon="ui-icon-check" style="margin:0" />
+                                <p:column>
+                                     <p:commandButton value="Save" ajax="false" actionListener="#{settingsController.updateRedisSettings}" icon="ui-icon-check" style="margin:0" />
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="Cancel"  ajax="false" action="settings?faces-redirect=true"  icon="ui-icon-cancel" style="margin:0" />
                                 </p:column>
                             </p:row>
                         </f:facet>
