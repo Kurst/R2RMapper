@@ -1,5 +1,6 @@
 package edu.itmo.ailab.semantic.r2rmapper.wi.beans.service.impl;
 
+import edu.itmo.ailab.semantic.r2rmapper.wi.beans.serialize.R2ROntologySettings;
 import edu.itmo.ailab.semantic.r2rmapper.wi.beans.serialize.R2RRedisSettings;
 import edu.itmo.ailab.semantic.r2rmapper.wi.beans.serialize.R2RSettings;
 import edu.itmo.ailab.semantic.r2rmapper.wi.beans.service.IR2RConfigurationHandler;
@@ -7,7 +8,9 @@ import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 
+import javax.inject.Inject;
 import java.io.*;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,6 +29,9 @@ public class R2RConfigurationHandlerImpl implements IR2RConfigurationHandler {
 
     public String configPath = System.getProperty("jboss.server.data.dir") + "/config.yaml";
 
+    @Inject
+    private RedisCacheImpl redisCache;
+
     @Override
     public void defineSettingsFile(String path){
         this.settingsPath = path;
@@ -34,6 +40,11 @@ public class R2RConfigurationHandlerImpl implements IR2RConfigurationHandler {
     @Override
     public void defineConfigFile(String path){
         this.configPath = path;
+    }
+
+    @Override
+    public Map getAllConfigs(){
+        return null;
     }
 
     @Override
@@ -47,7 +58,26 @@ public class R2RConfigurationHandlerImpl implements IR2RConfigurationHandler {
     }
 
     @Override
-    public Map getRedisSettings() throws IOException {
+    public void setAllSettings(){
+        R2RSettings appSet = new R2RSettings();
+        R2RRedisSettings redisSettings = new R2RRedisSettings();
+        redisSettings.setPort(Integer.parseInt(redisCache.fetchValueFromGroup("settings","redis.port")));
+        redisSettings.setHostname(redisCache.fetchValueFromGroup("settings","redis.hostname"));
+        appSet.setRedisServer(redisSettings);
+
+        R2ROntologySettings ontologySettings = new R2ROntologySettings();
+        ontologySettings.setStructureOntologyName(redisCache.fetchValueFromGroup("settings","ontology.structureOntologyName"));
+        ontologySettings.setDataOntologyName(redisCache.fetchValueFromGroup("settings","ontology.dataOntologyName"));
+        ontologySettings.setOntologyFormat(redisCache.fetchValueFromGroup("settings","ontology.ontologyFormat"));
+        ontologySettings.setOutputFolder(redisCache.fetchValueFromGroup("settings","ontology.outputFolder"));
+        appSet.setOutputOntologies(ontologySettings);
+        String output = new Yaml().dumpAsMap(appSet);
+        writeFile(settingsPath, output);
+    }
+
+    @Override
+    public Map getRedisSettings()
+            throws IOException {
         Yaml yaml = new Yaml();
         InputStream inputSettings = readFile(settingsPath);
 
@@ -59,20 +89,16 @@ public class R2RConfigurationHandlerImpl implements IR2RConfigurationHandler {
     }
 
     @Override
-    public Map getAllConfigs(){
-        return null;
-    }
+    public Map getOntologySettings()
+            throws IOException {
+        Yaml yaml = new Yaml();
+        InputStream inputSettings = readFile(settingsPath);
 
-    @Override
-    public void setRedisSettings(String hostname, Integer port){
-        R2RRedisSettings settings = new R2RRedisSettings();
-        settings.setPort(port);
-        settings.setHostname(hostname);
-        R2RSettings appSet = new R2RSettings();
-        appSet.setRedisServer(settings);
-        String output = new Yaml().dumpAsMap(appSet);
-        writeFile(settingsPath, output);
-
+        LOGGER.info("[R2RMapper] Loading settings from: " + settingsPath);
+        Map allSettings = (Map) yaml.load(inputSettings);
+        Map ontologySettings = (Map) allSettings.get("outputOntologies");
+        inputSettings.close();
+        return ontologySettings;
     }
 
 

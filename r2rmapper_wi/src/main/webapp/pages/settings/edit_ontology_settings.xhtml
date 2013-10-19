@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<h:body>
+
+    <ui:composition template="../../templates/masterLayout.xhtml">
+        <ui:define name="content">
+            <h:form>
+                <p:panel id="display" header="Application" style="margin-top:10px;">
+                    <p:panelGrid style="margin-top:20px">
+                        <f:facet name="header">
+                            <p:row>
+                                <p:column colspan="2">Output ontologies</p:column>
+                            </p:row>
+                        </f:facet>
+                        <p:row>
+                            <p:column style="font-weight: bold;"><h:outputLabel value="Structure ontology name: " /></p:column>
+                            <p:column style="font-weight: bold;"><p:inputText value="#{settingsController.structureOntologyName}" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="font-weight: bold;"><h:outputLabel value="Data ontology name: " /></p:column>
+                            <p:column style="font-weight: bold;"><p:inputText value="#{settingsController.dataOntologyName}" /></p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="font-weight: bold;"><h:outputLabel value="Ontology format: " /></p:column>
+                            <p:column style="font-weight: bold;">
+                                <p:selectOneMenu id="ontologyFormat" value="#{settingsController.ontologyFormat}">
+                                    <f:selectItems value="#{settingsController.allOntologyFormats()}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="font-weight: bold;"><h:outputLabel value="Output folder: " /></p:column>
+                            <p:column style="font-weight: bold;"><p:inputText value="#{settingsController.outputFolder}" /></p:column>
+                        </p:row>
+
+                        <f:facet name="footer">
+                            <p:row>
+                                <p:column>
+                                     <p:commandButton value="Save" ajax="false" actionListener="#{settingsController.updateOntologySettings}" icon="ui-icon-check" style="margin:0" />
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton value="Cancel"  ajax="false" action="settings?faces-redirect=true"  icon="ui-icon-cancel" style="margin:0" />
+                                </p:column>
+                            </p:row>
+                        </f:facet>
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</h:body>
+
+</html>

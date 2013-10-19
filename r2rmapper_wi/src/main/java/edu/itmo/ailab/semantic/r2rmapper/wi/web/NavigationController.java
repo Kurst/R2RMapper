@@ -33,10 +33,6 @@ public class NavigationController implements Serializable {
         }
     }
 
-    public String showEditSettingsPage(){
-        return "edit_settings";
-    }
-
     public void setPageId(String pageId) {
         this.pageId = pageId;
     }

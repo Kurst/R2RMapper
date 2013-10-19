@@ -23,11 +23,5 @@
             <to-view-id>/index.xhtml</to-view-id>
             <redirect />
         </navigation-case>
-        <navigation-case>
-            <from-action>#{navigationController.showEditSettingsPage}</from-action>
-            <from-outcome>edit_settings</from-outcome>
-            <to-view-id>/pages/settings/edit_settings.xhtml</to-view-id>
-            <redirect />
-        </navigation-case>
     </navigation-rule>
 </faces-config>

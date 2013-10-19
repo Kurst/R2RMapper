@@ -13,6 +13,7 @@ import java.util.Map;
 public class R2RSettings implements Serializable {
 
     private R2RRedisSettings RedisServer;
+    private R2ROntologySettings outputOntologies;
 
     public R2RRedisSettings getRedisServer() {
         return RedisServer;
@@ -21,5 +22,13 @@ public class R2RSettings implements Serializable {
 
     public void setRedisServer(R2RRedisSettings RedisServer) {
         this.RedisServer = RedisServer;
+    }
+
+    public R2ROntologySettings getOutputOntologies() {
+        return outputOntologies;
+    }
+
+    public void setOutputOntologies(R2ROntologySettings outputOntologies) {
+        this.outputOntologies = outputOntologies;
     }
 }

@@ -1,6 +1,7 @@
 package edu.itmo.ailab.semantic.r2rmapper.wi.beans.service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -21,11 +22,14 @@ public interface IR2RConfigurationHandler {
 
     public Map getAllSettings();
 
-    public Map getRedisSettings() throws IOException;
+    public void setAllSettings();
 
     public Map getAllConfigs();
 
-    public void setRedisSettings(String hostname, Integer port);
+    public Map getRedisSettings() throws IOException;
+
+    public Map getOntologySettings() throws IOException;
+
 
 
 
