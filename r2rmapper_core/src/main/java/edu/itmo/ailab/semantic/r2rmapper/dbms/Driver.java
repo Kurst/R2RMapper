@@ -11,6 +11,7 @@ package edu.itmo.ailab.semantic.r2rmapper.dbms;
 public class Driver {
 	public static Driver MysqlDriver = new Driver("com.mysql.jdbc.Driver");
     public static Driver PostgreSQLDriver = new Driver("org.postgresql.Driver");
+    public static Driver OracleSQLDriver = new Driver("oracle.jdbc.driver.OracleDriver");
 
     private String driverName;
     
@@ -29,6 +30,8 @@ public class Driver {
 			return MysqlDriver;
 		case "postgress":
 			return PostgreSQLDriver;
+        case "oracle":
+            return OracleSQLDriver;
 		default:
 			return MysqlDriver;
 		}
